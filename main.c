@@ -44,7 +44,7 @@ int main(void) {
   while (1) {
     led_green_toggle();
     delay();
-    led_red_toggle();
+    //led_red_toggle();
   }
 
   return 0;

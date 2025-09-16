@@ -607,7 +607,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/
                 0x00000408        0x4 LONG 0xffffffff
                 0x0000040c        0x4 LONG 0xfffffffe
 
-.text           0x00000410      0x18e
+.text           0x00000410      0x17e
  *(.text .text.* .gnu.linkonce.t.*)
  .text          0x00000410       0xd4 main.o
                 0x00000410                delay
@@ -615,89 +615,89 @@ LOAD /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/
                 0x00000478                led_green_toggle
                 0x00000488                led_red_init
                 0x000004d0                led_red_toggle
- .text.startup  0x000004e4       0x48 main.o
+ .text.startup  0x000004e4       0x38 main.o
                 0x000004e4                main
- .text          0x0000052c       0x50 startup.o
-                0x0000052c                HardFaultIntHandler
-                0x0000052c                PendSVIntHandler
-                0x0000052c                SysTickIntHandler
-                0x0000052c                BusFaultIntHandler
-                0x0000052c                NMIIntHandler
-                0x0000052c                UsageFaultIntHandler
-                0x0000052c                MemManageIntHandler
-                0x0000052c                SVCIntHandler
-                0x0000052c                DebugMonIntHandler
-                0x00000530                RTCSIntHandler
-                0x00000530                FTM1IntHandler
-                0x00000530                USBOTGIntHandler
-                0x00000530                UART0SEIntHandler
-                0x00000530                UART2SEIntHandler
-                0x00000530                FTM2IntHandler
-                0x00000530                I2C1IntHandler
-                0x00000530                PORTDIntHandler
-                0x00000530                Default_ResetHandler
-                0x00000530                DMA1IntHandler
-                0x00000530                DACIntHandler
-                0x00000530                ACMPIntHandler
-                0x00000530                ResetHandler
-                0x00000530                LVDIntHandler
-                0x00000530                PORTAIntHandler
-                0x00000530                SPI1IntHandler
-                0x00000530                FTFAIntHandler
-                0x00000530                UART1SEIntHandler
-                0x00000530                ADCIntHandler
-                0x00000530                DMA0IntHandler
-                0x00000530                I2C0IntHandler
-                0x00000530                FTM0IntHandler
-                0x00000530                LLWUIntHandler
-                0x00000530                MCGIntHandler
-                0x00000530                RTCAIntHandler
-                0x00000530                SPI0IntHandler
-                0x00000530                TSIIntHandler
-                0x00000530                LPTMRIntHandler
-                0x00000530                PITIntHandler
-                0x00000530                DMA3IntHandler
-                0x00000530                DMA2IntHandler
- .text.memset   0x0000057c       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
-                0x0000057c                memset
- .text.memcpy   0x0000058c       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
-                0x0000058c                memcpy
+ .text          0x0000051c       0x50 startup.o
+                0x0000051c                HardFaultIntHandler
+                0x0000051c                PendSVIntHandler
+                0x0000051c                SysTickIntHandler
+                0x0000051c                BusFaultIntHandler
+                0x0000051c                NMIIntHandler
+                0x0000051c                UsageFaultIntHandler
+                0x0000051c                MemManageIntHandler
+                0x0000051c                SVCIntHandler
+                0x0000051c                DebugMonIntHandler
+                0x00000520                RTCSIntHandler
+                0x00000520                FTM1IntHandler
+                0x00000520                USBOTGIntHandler
+                0x00000520                UART0SEIntHandler
+                0x00000520                UART2SEIntHandler
+                0x00000520                FTM2IntHandler
+                0x00000520                I2C1IntHandler
+                0x00000520                PORTDIntHandler
+                0x00000520                Default_ResetHandler
+                0x00000520                DMA1IntHandler
+                0x00000520                DACIntHandler
+                0x00000520                ACMPIntHandler
+                0x00000520                ResetHandler
+                0x00000520                LVDIntHandler
+                0x00000520                PORTAIntHandler
+                0x00000520                SPI1IntHandler
+                0x00000520                FTFAIntHandler
+                0x00000520                UART1SEIntHandler
+                0x00000520                ADCIntHandler
+                0x00000520                DMA0IntHandler
+                0x00000520                I2C0IntHandler
+                0x00000520                FTM0IntHandler
+                0x00000520                LLWUIntHandler
+                0x00000520                MCGIntHandler
+                0x00000520                RTCAIntHandler
+                0x00000520                SPI0IntHandler
+                0x00000520                TSIIntHandler
+                0x00000520                LPTMRIntHandler
+                0x00000520                PITIntHandler
+                0x00000520                DMA3IntHandler
+                0x00000520                DMA2IntHandler
+ .text.memset   0x0000056c       0x10 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memset.o)
+                0x0000056c                memset
+ .text.memcpy   0x0000057c       0x12 /usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/libc_nano.a(libc_a-memcpy-stub.o)
+                0x0000057c                memcpy
  *(.glue_7t)
- .glue_7t       0x0000059e        0x0 linker stubs
+ .glue_7t       0x0000058e        0x0 linker stubs
  *(.glue_7)
- .glue_7        0x0000059e        0x0 linker stubs
+ .glue_7        0x0000058e        0x0 linker stubs
  *(.rodata .rodata* .gnu.linkonce.r.*)
 
-.vfp11_veneer   0x000005a0        0x0
- .vfp11_veneer  0x000005a0        0x0 linker stubs
+.vfp11_veneer   0x00000590        0x0
+ .vfp11_veneer  0x00000590        0x0 linker stubs
 
-.v4_bx          0x000005a0        0x0
- .v4_bx         0x000005a0        0x0 linker stubs
+.v4_bx          0x00000590        0x0
+ .v4_bx         0x00000590        0x0 linker stubs
 
-.init           0x000005a0        0x4
- .init          0x000005a0        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
-                0x000005a0                _init
+.init           0x00000590        0x4
+ .init          0x00000590        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
+                0x00000590                _init
 
-.fini           0x000005a4        0x4
- .fini          0x000005a4        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
-                0x000005a4                _fini
+.fini           0x00000594        0x4
+ .fini          0x00000594        0x4 /usr/lib/gcc/arm-none-eabi/14.2.0/thumb/v6-m/nofp/crti.o
+                0x00000594                _fini
 
-.iplt           0x000005a8        0x0
- .iplt          0x000005a8        0x0 main.o
+.iplt           0x00000598        0x0
+ .iplt          0x00000598        0x0 main.o
 
-.rel.dyn        0x000005a8        0x0
- .rel.iplt      0x000005a8        0x0 main.o
+.rel.dyn        0x00000598        0x0
+ .rel.iplt      0x00000598        0x0 main.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x000005a8                        . = ALIGN (0x4)
-                0x000005a8                        _etext = .
-                0x000005a8                        _sidata = .
+                0x00000598                        . = ALIGN (0x4)
+                0x00000598                        _etext = .
+                0x00000598                        _sidata = .
 
-.data           0x1fffe000        0x0 load address 0x000005a8
+.data           0x1fffe000        0x0 load address 0x00000598
                 0x1fffe000                        _sdata = .
  *(.data .data.*)
                 0x1fffe000                        . = ALIGN (0x4)
