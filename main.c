@@ -12,50 +12,32 @@ void delay(void)
 }
 
 // LED_GREEN = PTD5
-void led_green_init()
-{
+void led_green_init() {
   SIM->COPC = 0;
   SIM->SCGC5 |= SIM_SCGC5_PORTD(1);
-  PORTD->PCR = PORTD_
-  GPIOD->PDDR = 
-  GPIOD->PSOR = 
+  PORTD->PCR[5] |= PORT_PCR_MUX(1);
+  GPIOD->PDDR |= (1 << 5); 
+  GPIOD->PSOR |= (1 << 5);
 }
 
-void led_green_toggle()
-{
-  //
-}
-
-// LED_RED = PTE29
-void led_red_init()
-{
-  SIM->COPC = SIM_COPC_COPT(0)
-  SIM->SCGC5 = SIM_SCGC5_PORTE(1)
-  PORTE->PCR[29]
-  GPIOE->PDDR
-  GPIOE->PSOR
-}
-
-void led_green_toggle()
-{
-  //
+void led_green_toggle() {
+  GPIOD->PTOR |= (1 << 5);
 }
 
 // LED_RED = PTE29
-void led_red_init()
-{
-  SIM->COPC[0x0]
-  SIM->SCGC5[0x00003000]
-  P
+void led_red_init() {
+  SIM->COPC = 0;
+  SIM->SCGC5 |= SIM_SCGC5_PORTE(1);
+  PORTE->PCR[29] |= PORT_PCR_MUX(1);
+  GPIOE->PDDR |= (1 << 29);
+  GPIOE->PSOR |= (1 << 29);
 }
 
-void led_red_toggle(void)
-{
-  //
+void led_red_toggle(void) {
+  GPIOE->PTOR |= (1 << 29);
 }
 
-int main(void)
-{
+int main(void) {
   led_green_init();
   led_red_init();
 
