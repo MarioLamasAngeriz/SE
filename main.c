@@ -42,7 +42,7 @@ int main(void) {
   led_red_init();
 
   while (1) {
-    //led_green_toggle();
+    led_green_toggle();
     delay();
     led_red_toggle();
   }
