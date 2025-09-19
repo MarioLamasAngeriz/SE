@@ -90,13 +90,13 @@ int main(void) {
 
     if (b1 && !b1_prev) { //boton rotacion
 
-      if (~led_red_state & ~led_green_state) {
+      if (!led_red_state && !led_green_state) {
 	      led_green_toggle();
-      } else if (~led_red_state & led_green_state) {
+      } else if (!led_red_state && led_green_state) {
 	      led_red_toggle();
-      } else if (led_red_state & led_green_state) {
+      } else if (led_red_state && led_green_state) {
 	      led_green_toggle();
-      } else if (led_red_state & ~led_green_state) {
+      } else if (led_red_state && !led_green_state) {
 	      led_red_toggle();
       }
 
