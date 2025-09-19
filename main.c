@@ -63,6 +63,14 @@ int button3_detect(void){
   return!(GPIOC->PDIR & (1 << 12)); // comprobamos nivel lógico, 1 -> sin presionar, 0 -> presionadoo
 }
 
+int led_green_detect(void) {
+  return(GPIOD->PDIR & (1 << 5));
+}
+
+int led_red_detect(void) {
+  return(GPIOE->PDIR & (1 << 29));
+}
+
 int main(void) {
 
   int b1_prev = 0;
@@ -77,11 +85,25 @@ int main(void) {
     int b1 = button1_detect();
     int b3 = button3_detect();
 
-    if (b1 && !b1_prev) {
-      led_green_toggle();
+    int led_green_state = led_green_detect();
+    int led_red_state = led_red_detect();
+
+    if (b1 && !b1_prev) { //boton rotacion
+
+      if (~led_red_state & ~led_green_state) {
+	      led_green_toggle();
+      } else if (~led_red_state & led_green_state) {
+	      led_red_toggle();
+      } else if (led_red_state & led_green_state) {
+	      led_green_toggle();
+      } else if (led_red_state & ~led_green_state) {
+	      led_red_toggle();
+      }
+
     }
 
-    if (b3 && !b3_prev) {
+    if (b3 && !b3_prev) { //boton intercambio
+      led_green_toggle();
       led_red_toggle();
     }
 
