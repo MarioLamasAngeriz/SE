@@ -11,7 +11,6 @@ void delay(void) {
 
 // LED_GREEN = PTD5
 void led_green_init(void) {
-  SIM->COPC = 0;
   SIM->SCGC5 |= SIM_SCGC5_PORTD(1);
   PORTD->PCR[5] |= PORT_PCR_MUX(1);
   GPIOD->PDDR |= (1 << 5); 
@@ -20,7 +19,6 @@ void led_green_init(void) {
 
 // LED_RED = PTE29
 void led_red_init(void) {
-  SIM->COPC = 0;
   SIM->SCGC5 |= SIM_SCGC5_PORTE(1);
   PORTE->PCR[29] |= PORT_PCR_MUX(1);
   GPIOE->PDDR |= (1 << 29);
@@ -37,7 +35,6 @@ void led_red_toggle(void) {
 
 // SW1 = PTC3
 void button1_init(void) {
-  SIM->COPC = 0;
   SIM->SCGC5 |= SIM_SCGC5_PORTC(1);
   PORTC->PCR[3] |= PORT_PCR_MUX(1);
   PORTC->PCR[3] |= PORT_PCR_PE(1);
@@ -47,7 +44,6 @@ void button1_init(void) {
 
 // SW3 = PTC12
 void button3_init(void) { 
-  SIM->COPC = 0;
   SIM->SCGC5 |= SIM_SCGC5_PORTC(1);
   PORTC->PCR[12] |= PORT_PCR_MUX(1);
   PORTC->PCR[12] |= PORT_PCR_PE(1);
@@ -73,6 +69,8 @@ int led_red_detect(void) {
 
 int main(void) {
 
+  SIM->COPC = 0;
+  
   int b1_prev = 0;
   int b3_prev = 0;
 
