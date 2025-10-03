@@ -6,7 +6,7 @@ LED=led.elf
 OBJECTS_LED=led_blinky.o startup.o drivers/fsl_gpio.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o
 
 HI=hello.elf
-OBJECTS_HI=hello_world.o startup.o
+OBJECTS_HI=hello_world.o startup.o drivers/fsl_gpio.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o
 
 $(LED): $(OBJECTS_LED)
 	$(CC) $(LDFLAGS) $^ -o $@
