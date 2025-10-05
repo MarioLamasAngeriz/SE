@@ -1,7 +1,7 @@
 //*****************************************************************************
 // Declaration of the default fault handlers
 //*****************************************************************************
-
+#include "./includes/MKL46Z4.h"
 #define WEAK __attribute__ ((weak))
 
 void WEAK  ResetHandler(void);
@@ -145,6 +145,8 @@ void (* const g_pfnVectors[])(void) =
 //*****************************************************************************
 void Default_ResetHandler(void)
 {
+  SIM->COPC = 0;
+
   unsigned long *pulSrc, *pulDest;
 
   /* copy the data segment initializers from flash to SRAM */

@@ -1,12 +1,15 @@
 CC=arm-none-eabi-gcc
 LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
-CFLAGS=-I ./includes -I ./drivers -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
+CFLAGS=$(INCLUDES) -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
+INCLUDES = -I ./includes -I ./drivers -I ./includes/led -I ./includes/hello
 
 LED=led.elf
-OBJECTS_LED=led_blinky.o startup.o drivers/fsl_gpio.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o
+OBJECTS_LED=led_blinky.o startup.o drivers/fsl_gpio.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/led/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o drivers/fsl_assert.o
 
 HI=hello.elf
-OBJECTS_HI=hello_world.o startup.o drivers/fsl_gpio.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o
+OBJECTS_HI=hello_world.o startup.o drivers/fsl_gpio.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/hello/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o drivers/fsl_assert.o
+
+all: $(LED) $(HI)
 
 $(LED): $(OBJECTS_LED)
 	$(CC) $(LDFLAGS) $^ -o $@
