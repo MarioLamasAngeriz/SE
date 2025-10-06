@@ -1,28 +1,17 @@
 
 
-->DEADLINE: luns 6 outubro 2025
-->Entregable: URL ao repositorio git co traballo. Idealmente, o mesmo repositorio que na práctica 1, pero nunha rama diferente (por ex. «Práctica 2»)
-->É unha práctica individual
+# Práctica 3 - SE 25/26
 
-Crear un proxecto a partir dos exemplos «led_blinky» e «hello_world» que veñen nas 'demo-apps' da SDK (collede a versión da SDK que dá soporte á nosa placa) que ten que compilar e xerar os correspondentes binarios, led_blinky e hello_world, para executar na nosa placa, empregando a Toolchain GNU (GCC + OpenOCD + GDB), co seu correspondente Makefile.
+Implementa un pequeno xogo coa placa: o xogo consiste en que a placa fai unha secuencia co acendido/apagado dos dous LEDs, e a usuaria/o ten que premer no botón correspondente ao LED que a placa teña acendido en cada momento.
 
-O Makefile terá que proporcionar estas dúas regras, para construír e meter na flash da placa calquera dos dous binarios:
-  - flash_led
-  - flash_hello
+    O botón esquerdo (sw2/sw3) correponde á luz vermella (luz esquerda)  e o botón dereito (sw1) á luz dereita.
+    A xestión da E/S cos botóns farase con interrupcións.
 
-A estrutura de directorios para a práctica podería ser a seguinte:
+Só unha das luces pode estar acendida en cada momento. A secuencia de acendidos podería aleatorizarse, pero imos facelo máis simple, considerando unha secuencia de bits fixa (que se pode mudar: variable 'sequence' no código)
 
-+ /practica2_SE
-    - /includes
-    - /drivers <- metede aquí todos os drivers e demais que precisedes, e que podedes coller de devices/MKL46Z4
-    - hello_world.c
-    - led_blinky.c
-    - makefile    <- que constrúa e 'flashee' os binarios
-    - startup.c   <- collede o de clase e engadide a desactivación do watchdog na rutina de reset()
-    - openocd.cfg <- para facer o «flash» dos binarios na placa
-    - link.ld     <- usade o script de enlazado que vimos empregando ata agora
+- Cóntanse os acertos e os erros durante a secuencia completa, e vanse actualizando na pantalla LCD con este formato: hits:misses
 
-Un exemplo de driver que é preciso para construír os dous binarios é utilities/fsl_assert.c
+- Ao rematar a secuencia non se admiten máis pulsacións, e o resultado final (que xa non se actualizará) móstrase pestanexando no LCD,  mantendo o mesmo formato.
 
-Valorarase positivamente non incluír drivers de máis (é dicir, que non se precisan neses dous proxectos)
+Podes partir deste esqueleto de código: https://gitlab.com/emiliojpg/sistemasembebidos/-/tree/Prac3
 
