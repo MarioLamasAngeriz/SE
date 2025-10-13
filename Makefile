@@ -1,9 +1,9 @@
 CC=arm-none-eabi-gcc
 LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
-CFLAGS=-I ./includes -O2 -Wall -mthumb -mcpu=cortex-m0plus
+CFLAGS=-I ./drivers -I ./includes -O2 -Wall -mthumb -mcpu=cortex-m0plus
 
 TARGET=main.elf
-OBJECTS=main.o startup.o 
+OBJECTS=main.o startup.o drivers/lcd.o
 
 all: $(TARGET)
 
