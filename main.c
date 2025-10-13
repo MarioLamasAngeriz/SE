@@ -1,5 +1,6 @@
 #include "includes/MKL46Z4.h"
 #include "drivers/lcd.h"
+
 #define SIZE 10
 // LED (RG)
 // LED_GREEN = PTD5
@@ -47,28 +48,51 @@ int led_red_detect (void) {
 	return(GPIOE->PDIR & (1 << 29));
 }
 
-volatile unsigned int sequence[SIZE] = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1};
-volatile unsigned int indice = 0;
+volatile uint8_t sequence[SIZE] = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1};
+volatile uint16_t indice = 0; //iteracion
+
+volatile uint8_t botonIzq = 0; //variables q deben actualizar as interrupcions
+volatile uint8_t botonDer = 1;
+
+volatile uint16_t hit = 0;     //resultado
+volatile uint16_t misses = 0;
 
 void ledsOnOffSec (int led_green_state, int led_red_state) {
+
+	for (indice; indice <= SIZE; indice++){
+
+		led_green_state = led_green_detect();
+		led_red_state = led_red_detect();
+
+		if(!led_red_state) { led_red_toggle(); }
+		if(!led_green_state) { led_green_toggle(); }
+
+		delay();
+
+		if (sequence[indice]) {
+			led_red_toggle(); 
+		} else {
+			led_green_toggle();
+		}
+
+		if (botonIzq & !led_red_detect() || botonDer & !led_green_detect()){
+			hit++;
+		} else {
+			misses++;
+		}
+
+		delay();
+
+		lcd_display_time(hit, misses);
+	}
+
 	led_green_state = led_green_detect();
 	led_red_state = led_red_detect();
 
 	if(!led_red_state) { led_red_toggle(); }
 	if(!led_green_state) { led_green_toggle(); }
 
-	delay();
-
-	if (sequence[indice]) {
-		led_red_toggle(); 
-	} else {
-		led_green_toggle();
-	}
-
-	indice == SIZE ? indice = 0 : indice++;
-	delay();
 }
-
 
 // SW1 = PTC3
 void button1_init(void) {
@@ -88,7 +112,6 @@ void button3_init(void) {
 	GPIOC->PDDR &= ~(1 << 12); // aseguramos q es input
 }
 
-
 //boton esquerdo led vermello ////////////////// boton dereito led verde
 
 int main(void) {
@@ -99,13 +122,16 @@ int main(void) {
 	led_green_init();
 	led_red_init();
 
-	int led_green_state = 0;
+	int led_green_state = 0; //declarar mais arriba e usar para comprobar interrupcions? ou innecesario?
 	int led_red_state = 0;
 
-	while (1) {
-		ledsOnOffSec(led_green_state, led_red_state);
-		lcd_display_time(indice, indice);
-	}
+	ledsOnOffSec(led_green_state, led_red_state);
 
-	return 0;
+	while(1){
+		delay();
+		lcd_display_time(0, 0);
+		delay();
+		lcd_display_time(hit, misses); //falta parpadeo
+		delay();
+	}
 }
