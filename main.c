@@ -1,6 +1,6 @@
 #include "includes/MKL46Z4.h"
 #include <strings.h>
-
+#define SIZE 10
 // LED (RG)
 // LED_GREEN = PTD5
 // LED_RED = PTE29
@@ -42,7 +42,7 @@ int led_red_detect (void) {
   return(GPIOE->PDIR & (1 << 29));
 }
 
-volatile unsigned int sequence[10] = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1};
+volatile unsigned int sequence[SIZE] = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1};
 volatile unsigned int indice = 0;
 
 void ledsOnOffSec (int led_green_state, int led_red_state) {
@@ -60,7 +60,7 @@ void ledsOnOffSec (int led_green_state, int led_red_state) {
 	    led_green_toggle();
     }
 
-    indice == 10 ? indice = 0 : indice++;
+    indice == SIZE ? indice = 0 : indice++;
     delay();
 }
 
