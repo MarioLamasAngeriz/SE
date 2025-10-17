@@ -2,9 +2,9 @@
 #include "drivers/lcd.h"
 #include <stdint.h>
 
-#define SIZE 10
+#define SIZE 32
 
-volatile uint8_t sequence[SIZE] = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1};
+volatile uint8_t sequence[SIZE] = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1};
 volatile uint16_t indice = 0; //iteracion
 
 volatile uint8_t botonIzq = 0; //variables q deben actualizar as interrupcions
