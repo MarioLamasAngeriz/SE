@@ -17,7 +17,7 @@ volatile uint16_t hit = 0;     //resultado
 volatile uint16_t misses = 0;
 
 void irclk_ini (void){
-	MCG->C1 = MCG_C1_IRCLKEN(1) | MCG_C1_IREFSTEN(1);
+	MCG->C1 = MCG_C1_IRCLKEN_MASK | MCG_C1_IREFSTEN_MASK;
 	MCG->C2 = MCG_C2_IRCS(0); //0 32KHZ internal reference clock; 1= 4MHz irc
 }
 
@@ -44,7 +44,7 @@ void apagar_led_red (void) {
 
 // LED_GREEN = PTD5
 void led_green_init (void) {
-	SIM->SCGC5 |= SIM_SCGC5_PORTD(1);
+	SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK;
 	PORTD->PCR[5] |= PORT_PCR_MUX(1);
 	GPIOD->PDDR |= (1 << 5); 
 	apagar_led_green();
@@ -52,24 +52,24 @@ void led_green_init (void) {
 
 // LED_RED = PTE29
 void led_red_init (void) {
-	SIM->SCGC5 |= SIM_SCGC5_PORTE(1);
+	SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;
 	PORTE->PCR[29] |= PORT_PCR_MUX(1);
 	GPIOE->PDDR |= (1 << 29);
 	apagar_led_red();
 }
 
 void buttons_init(void) {
-	SIM->SCGC5 |= SIM_SCGC5_PORTC(1);
+	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
 
 	PORTC->PCR[3] |= PORT_PCR_MUX(1);
-	PORTC->PCR[3] |= PORT_PCR_PE(1);
-	PORTC->PCR[3] |= PORT_PCR_PS(1);
+	PORTC->PCR[3] |= PORT_PCR_PE_MASK;
+	PORTC->PCR[3] |= PORT_PCR_PS_MASK;
 	PORTC->PCR[3] |= PORT_PCR_IRQC(0x0A);
 	GPIOC->PDDR &= ~(1 << 3);
 				  
 	PORTC->PCR[12] |= PORT_PCR_MUX(1);
-	PORTC->PCR[12] |= PORT_PCR_PE(1);
-	PORTC->PCR[12] |= PORT_PCR_PS(1); 
+	PORTC->PCR[12] |= PORT_PCR_PE_MASK;
+	PORTC->PCR[12] |= PORT_PCR_PS_MASK; 
 	PORTC->PCR[12] |= PORT_PCR_IRQC(0x0A);
 	GPIOC->PDDR &= ~(1 << 12);
 
