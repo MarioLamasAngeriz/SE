@@ -4,6 +4,7 @@ Nesta práctica veremos como empregar algo de código ensamblador nos nosos prox
 
 Proporciona unha implementación en ensamblador para unha función que rote todos os bits dun número enteiro que recibe como parámetro: reverse_int(). Ofrece unha implementación que *ti* penses que pode ser máis eficiente que a ofrecida polo compilador cando traduce este código C co nivel de optimización -Ofast:
 
+´´´c
 unsigned int reverse_int(unsigned int in)
 {
   unsigned int out = 0;
@@ -17,6 +18,7 @@ unsigned int reverse_int(unsigned int in)
 
   return out;
 }
+´´´
 
 Fai dúas implementacións desa función:
 
