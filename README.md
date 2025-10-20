@@ -1,17 +1,28 @@
+# Práctica 4 - SE 24/25
 
+Nesta práctica veremos como empregar algo de código ensamblador nos nosos proxectos. En xeral, isto faise cando é preciso optimizar algunha parte do código respecto ao código máquina que o compilador proporciona, pero no noso caso imos facelo para un caso concreto e sinxelo.
 
-# Práctica 3 - SE 25/26
+Proporciona unha implementación en ensamblador para unha función que rote todos os bits dun número enteiro que recibe como parámetro: reverse_int(). Ofrece unha implementación que *ti* penses que pode ser máis eficiente que a ofrecida polo compilador cando traduce este código C co nivel de optimización -Ofast:
 
-Implementa un pequeno xogo coa placa: o xogo consiste en que a placa fai unha secuencia co acendido/apagado dos dous LEDs, e a usuaria/o ten que premer no botón correspondente ao LED que a placa teña acendido en cada momento.
+unsigned int reverse_int(unsigned int in)
+{
+  unsigned int out = 0;
+  // Devolve o enteiro invertido bit a bit
 
-    O botón esquerdo (sw2/sw3) correponde á luz vermella (luz esquerda)  e o botón dereito (sw1) á luz dereita.
-    A xestión da E/S cos botóns farase con interrupcións.
+  for (unsigned int i=0; i<32; i++) {
+    out = out << 1;
+    out |= in & 1;
+    in = in >> 1;
+  }
 
-Só unha das luces pode estar acendida en cada momento. A secuencia de acendidos podería aleatorizarse, pero imos facelo máis simple, considerando unha secuencia de bits fixa (que se pode mudar: variable 'sequence' no código)
+  return out;
+}
 
-- Cóntanse os acertos e os erros durante a secuencia completa, e vanse actualizando na pantalla LCD con este formato: hits:misses
+Fai dúas implementacións desa función:
 
-- Ao rematar a secuencia non se admiten máis pulsacións, e o resultado final (que xa non se actualizará) móstrase pestanexando no LCD,  mantendo o mesmo formato.
+1. Función C con código ensamblador embebido no código C (inline ASM).
 
-Podes partir deste esqueleto de código: https://gitlab.com/emiliojpg/sistemasembebidos/-/tree/Prac3
+2. Función completa en ensamblador nun arquivo .s propio que haberá que ensamblar para obter o código obxecto que logo enlazar co resto.
+
+Inclúe na entrega os arquivos .c e .s correspondentes, xunto a un arquivo de texto explicando a túa mellora sobre a versión ofrecida polo compilador. Non pasa nada se a túa mellora, ao final, non é máis eficiente, pero xustifica as túas decisións.
 
