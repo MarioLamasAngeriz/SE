@@ -1,7 +1,8 @@
+#include "includes/MKL46Z4.h"
+#include <stdint.h>
 #define CPU_MKL46Z256VLL4 1
 #include <stdlib.h>
 #include "includes/fsl_debug_console.h"
-
 #include "includes/board.h"
 #include "includes/pin_mux.h"
 
@@ -29,10 +30,25 @@ void imprimir_en_binario(unsigned int in) {
 	PRINTF("\r\n");
 }
 
+void systic_conf(void) {
+	SysTick->CTRL = 0;
+	SysTick->LOAD = 0xFFFFFF;
+	SysTick->VAL = 0;
+	SysTick->CTRL = SysTick_CTRL_ENABLE_Msk;
+}
+
+uint32_t systic_get(void) {
+	return 0xFFFFFF - SysTick->VAL;
+}
+
 int main() {
 	char num_str[10];
 	char ch;
 	int i = 0;
+	uint32_t inicio;
+	unsigned int reversed;
+	uint32_t fin;
+	uint32_t ciclosCPU;
 
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
@@ -54,7 +70,17 @@ int main() {
 	PRINTF("\r\nNumero a invertir bit a bit: %d\r\n", num);
 	imprimir_en_binario(num);
 
-	unsigned int reversed = reverse_int(num);
+	systic_conf();
+	inicio = systic_get();
+	
+	reversed = reverse_int(num);
+	
+	fin = systic_get();
+	ciclosCPU = fin - inicio; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
+
 	PRINTF("Numero invertido bit a bit: %d\r\n", reversed);
 	imprimir_en_binario(reversed);
+
+	PRINTF("Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) \r\n"
+			"para la ejecución de la función de inversion de bits = %d\r\n", ciclosCPU);
 }
