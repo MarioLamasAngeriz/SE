@@ -1,15 +1,12 @@
 #define CPU_MKL46Z256VLL4 1
-#include "includes/fsl_device_registers.h"
+#include <stdlib.h>
 #include "includes/fsl_debug_console.h"
 
 #include "includes/board.h"
 #include "includes/pin_mux.h"
 
-#define VALOR 4
-
 unsigned int reverse_int(unsigned int in) {
 	unsigned int out = 0;
-	// Devolve o enteiro invertido bit a bit
 	for (unsigned int i=0; i<32; i++) {
 		out = out << 1;
 		out |= in & 1;
@@ -19,21 +16,29 @@ unsigned int reverse_int(unsigned int in) {
 }
 
 int main() {
+	char num_str[10];
 	char ch;
+	int i = 0;
 
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
 
-	PRINTF("start");
+	PRINTF("Introduce un número enteiro, max 9 dixitos\r\n");
 
-	while(1) {
+	while (i < 9) {
 		ch = GETCHAR();
+		PUTCHAR(ch);
+		
 		if (ch == '\n' || ch == '\r')
 			break;
-		PUTCHAR(ch);
+		
+		num_str[i++] = ch;
 	}
+	num_str[i] = '\0';
+	PRINTF("\r\nNumero a invertir bit a bit: %s\r\n", num_str);
+	unsigned int num = atoi(num_str);
 
-	PRINTF("end");
-
+	unsigned int reversed = reverse_int(num);
+	PRINTF("Numero invertido bit a bit: %d\r\n", reversed);
 }
