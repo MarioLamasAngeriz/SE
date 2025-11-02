@@ -15,6 +15,20 @@ unsigned int reverse_int(unsigned int in) {
 	return out;
 }
 
+void imprimir_en_binario(unsigned int in) {
+	PRINTF("Número en binario: 0b");
+	for (int i = 31; i >= 0; i--) {
+		if (in & (1u << i)) {
+			PRINTF("1");
+		} else { 
+			PRINTF("0");
+		}
+		if (i % 8 == 0)
+			PRINTF(" ");
+	}
+	PRINTF("\r\n");
+}
+
 int main() {
 	char num_str[10];
 	char ch;
@@ -29,16 +43,18 @@ int main() {
 	while (i < 9) {
 		ch = GETCHAR();
 		PUTCHAR(ch);
-		
 		if (ch == '\n' || ch == '\r')
 			break;
-		
 		num_str[i++] = ch;
 	}
+
 	num_str[i] = '\0';
-	PRINTF("\r\nNumero a invertir bit a bit: %s\r\n", num_str);
+	
 	unsigned int num = atoi(num_str);
+	PRINTF("\r\nNumero a invertir bit a bit: %d\r\n", num);
+	imprimir_en_binario(num);
 
 	unsigned int reversed = reverse_int(num);
 	PRINTF("Numero invertido bit a bit: %d\r\n", reversed);
+	imprimir_en_binario(reversed);
 }
