@@ -10,23 +10,27 @@
 unsigned int reverse_int(unsigned int in) {
 	unsigned int out = 0;
 	asm volatile (
-		".syntax unified\n\t"
-		"movs r3, %[input]\n\t"    // copiar parámetro a r3
-		"movs %[output], #0\n\t"   // out = 0
-		"movs r2, #32\n\t"         // contador = 32
-        	"movs r4, #1\n\t"          // máscara 1
-	    "1:\n\t"
-        	"movs r1, r4\n\t"          
-	        "lsls %[output], %[output], #1\n\t"
-        	"ands r1, r3\n\t"
-	        "orrs %[output], %[output], r1\n\t"
-	        "lsrs r3, r3, #1\n\t"
-	        "subs r2, r2, #1\n\t"
-	        "bne 1b\n\t"
-	        : [output] "=r" (out)         // salida
-	        : [input] "r" (in)            // entrada
-	        : "r1", "r2", "r3", "r4", "cc" // registros usados
-    	);
+	".syntax unified\n\t"
+	
+	"movs   r3, %[IN]\n\t"
+        "movs   r2, #32\n\t"
+        "movs   %[OUT], #0\n\t"
+        "movs   r4, #1\n\t"
+    "1:\n\t"
+        "movs   r1, r4\n\t"
+        "lsls   %[OUT], #1\n\t"        // Forma de 2 operandos (dest implícito)
+        "ands   r1, r3\n\t"            // Forma de 2 operandos
+        "subs   r2, r2, #1\n\t"            // Forma de 2 operandos
+        "orrs   %[OUT], r1\n\t"        // Forma de 2 operandos
+        "lsrs   r3, r3, #1\n\t"            // Forma de 2 operandos
+        "cmp    r2, #0\n\t"
+        "bne    1b\n\t"
+	
+	: [OUT] "=r" (out)
+	: [IN] "r" (in)
+
+	: "r1", "r2", "r3", "r4", "cc"
+	);
 	return out;
 }
 
@@ -49,11 +53,11 @@ void systic_conf(void) {
 	SysTick->CTRL = 0;
 	SysTick->LOAD = 0xFFFFFF;
 	SysTick->VAL = 0;
-	SysTick->CTRL = SysTick_CTRL_ENABLE_Msk;
+	SysTick->CTRL = SysTick_CTRL_ENABLE_Msk | SysTick_CTRL_CLKSOURCE_Msk;
 }
 
 uint32_t systic_get(void) {
-	return 0xFFFFFF - SysTick->VAL;
+	return SysTick->VAL;
 }
 
 int main() {
@@ -91,7 +95,7 @@ int main() {
 	reversed = reverse_int(num);
 	
 	fin = systic_get();
-	ciclosCPU = fin - inicio; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
+	ciclosCPU = (inicio - fin) & 0xFFFFFF; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
 
 	PRINTF("Numero invertido bit a bit: %d\r\n", reversed);
 	imprimir_en_binario(reversed);

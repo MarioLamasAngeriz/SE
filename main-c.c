@@ -34,11 +34,11 @@ void systic_conf(void) {
 	SysTick->CTRL = 0;
 	SysTick->LOAD = 0xFFFFFF;
 	SysTick->VAL = 0;
-	SysTick->CTRL = SysTick_CTRL_ENABLE_Msk;
+	SysTick->CTRL = SysTick_CTRL_ENABLE_Msk | SysTick_CTRL_CLKSOURCE_Msk;
 }
 
 uint32_t systic_get(void) {
-	return 0xFFFFFF - SysTick->VAL;
+	return SysTick->VAL;
 }
 
 int main() {
@@ -76,11 +76,11 @@ int main() {
 	reversed = reverse_int(num);
 	
 	fin = systic_get();
-	ciclosCPU = fin - inicio; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
+	ciclosCPU = (inicio - fin) & 0xFFFFFF; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
 
 	PRINTF("Numero invertido bit a bit: %d\r\n", reversed);
 	imprimir_en_binario(reversed);
 
 	PRINTF("Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) \r\n"
-			"para la ejecución de la función de inversion de bits = %d\r\n", ciclosCPU);
+			"para la ejecución de la función de inversion de bits = %u\r\n", ciclosCPU);
 }
