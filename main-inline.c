@@ -1,4 +1,3 @@
-
 #include "includes/MKL46Z4.h"
 #include <stdint.h>
 #define CPU_MKL46Z256VLL4 1
@@ -8,7 +7,7 @@
 #include "includes/pin_mux.h"
 
 unsigned int reverse_int(unsigned int in) {
-	unsigned int out = 0;
+	unsigned int out;
 	asm volatile (
 	".syntax unified\n\t"
 	
@@ -18,16 +17,16 @@ unsigned int reverse_int(unsigned int in) {
         "movs   r4, #1\n\t"
     "1:\n\t"
         "movs   r1, r4\n\t"
-        "lsls   %[OUT], #1\n\t"        // Forma de 2 operandos (dest implícito)
-        "ands   r1, r3\n\t"            // Forma de 2 operandos
-        "subs   r2, r2, #1\n\t"            // Forma de 2 operandos
-        "orrs   %[OUT], r1\n\t"        // Forma de 2 operandos
-        "lsrs   r3, r3, #1\n\t"            // Forma de 2 operandos
+        "lsls   %[OUT], #1\n\t"      
+        "ands   r1, r3\n\t"           
+        "subs   r2, r2, #1\n\t"            
+        "orrs   %[OUT], r1\n\t"        
+        "lsrs   r3, r3, #1\n\t"           
         "cmp    r2, #0\n\t"
         "bne    1b\n\t"
 	
-	: [OUT] "=r" (out)
-	: [IN] "r" (in)
+	: [OUT] "=l" (out)
+	: [IN] "l" (in)
 
 	: "r1", "r2", "r3", "r4", "cc"
 	);
