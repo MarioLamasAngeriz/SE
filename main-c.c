@@ -67,7 +67,7 @@ int main(void) {
 	num_str[i] = '\0';
 	
 	uint32_t num = atoi(num_str);
-	PRINTF("\r\nNumero a invertir bit a bit: %u\r\n", num);
+	PRINTF("\r\nNúmero a invertir bit a bit: %u\r\n", num);
 	imprimir_en_binario(num);
 
 	systic_conf();
@@ -78,9 +78,9 @@ int main(void) {
 	fin = systic_get();
 	ciclosCPU = (inicio - fin) & 0xFFFFFF; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
 
-	PRINTF("Numero invertido bit a bit: %u\r\n", reversed);
+	PRINTF("Número invertido bit a bit: %u\r\n", reversed);
 	imprimir_en_binario(reversed);
 
 	PRINTF("Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) \r\n"
-			"para la ejecución de la función de inversion de bits = %u\r\n", ciclosCPU);
+			"para a execución de la función de inversion de bits = %u\r\n", ciclosCPU);
 }

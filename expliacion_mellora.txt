@@ -21,7 +21,7 @@ Esta información obtivose co comando "arm-none-eabi-objdump -d main-c.o"
 despois de executar make all.
 
 Para medir a eficacia deste código e poder comparalo con outras implementacións 
-axudaremonos do timer SysTick que está integrado no core do procesador.
+axudarémonos do timer SysTick que está integrado no core do procesador.
 
 Tomamos entón coma unidade de medida os ticks do SysTick, como a frecuencia de este 
 timer e a da CPU é a mesma, podemos consideralos ciclos de CPU.
@@ -31,12 +31,12 @@ optimiza, a execución da función tarda uns 295 ciclos.
 
 Introduce un número enteiro, max 9 dixitos
 999999999
-Numero a invertir bit a bit: 999999999
+Número a invertir bit a bit: 999999999
 Número en binario: 0b00111011 10011010 11001001 11111111 
-Numero invertido bit a bit: 4287846876
+Número invertido bit a bit: 4287846876
 Número en binario: 0b11111111 10010011 01011001 11011100 
 Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) 
-para la ejecución de la función de inversion de bits = 295
+para a execución de la función de inversion de bits = 295
 
 Debemos entón mellorar a implementación en ensamblador para reducir o número de ciclos.
 Para comezar se nos fixamos no código o rexistro número 4 non está facendo nada realmente, podemos
@@ -50,7 +50,7 @@ Continuando coa optimización, simplemente aplicouse a estratexia de loop unroll
 de forma considerable o número de iteracións do bucle. Reducir o número de iteracións é moi beneficioso pois
 eso implica que se realizarán menos comparacións (cmp r2, #0), menos saltos (bne .L2) e menos restas (subs r2, #1). 
 
-De esta forma simplemente ordenando un pouco o código en ensamblador, repetindoo un número adecuado de veces 
+Desta forma simplemente ordenando un pouco o código en ensamblador, repetíndoo un número adecuado de veces 
 e reducindo o número de iteracións, a eficiencia do noso programa aumentará significativamente.
 
 A miña versión optimizada implementada inline en C é:
@@ -104,12 +104,12 @@ Para o caso do main-inline.c a execución da función tarda uns 203 ciclos.
 
 Introduce un número enteiro, max 9 dixitos
 999999999
-Numero a invertir bit a bit: 999999999
+Número a invertir bit a bit: 999999999
 Número en binario: 0b00111011 10011010 11001001 11111111 
-Numero invertido bit a bit: 4287846876
+Número invertido bit a bit: 4287846876
 Número en binario: 0b11111111 10010011 01011001 11011100 
 Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) 
-para la ejecución de la función de inversion de bits = 203
+para a execución de la función de inversion de bits = 203
 
 Porducese entón unha mellora de arredor do 30%
 
@@ -162,15 +162,15 @@ Para o caso do main-link-ASM.c xunto co reverse.s, a execución da función tard
 
 Introduce un número enteiro, max 9 dixitos
 999999999
-Numero a invertir bit a bit: 999999999
+Número a invertir bit a bit: 999999999
 Número en binario: 0b00111011 10011010 11001001 11111111 
-Numero invertido bit a bit: 4287846876
+Número invertido bit a bit: 4287846876
 Número en binario: 0b11111111 10010011 01011001 11011100 
 Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) 
-para la ejecución de la función de inversion de bits = 205
+para a execución de la función de inversion de bits = 205
 
 Porducese entón unha mellora de arredor do 30%
 Neste caso vemos que o código linkado de forma externa tarda 2 ciclos máis ca o inline, 
 esto é debido a que o compilador pode optimizar todo o contexto no caso do inline pois conoce
 a función ao completo, pero no caso do linkado desde un .s externo non, fai entón algunhas operacións 
-extra para asegurarse da corrección do programa e o linkado que producen esta pequena diferencia.
+extra para asegurarse da corrección do programa e o linkado que producen esta pequena diferenza.
