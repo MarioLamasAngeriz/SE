@@ -6,9 +6,9 @@
 #include "includes/board.h"
 #include "includes/pin_mux.h"
 
-unsigned int reverse_int(unsigned int in) {
-	unsigned int out = 0;
-	for (unsigned int i=0; i<32; i++) {
+uint32_t reverse_int(uint32_t in) {
+	uint32_t out = 0;
+	for (uint32_t i=0; i<32; i++) {
 		out = out << 1;
 		out |= in & 1;
 		in = in >> 1;
@@ -16,7 +16,7 @@ unsigned int reverse_int(unsigned int in) {
 	return out;
 }
 
-void imprimir_en_binario(unsigned int in) {
+void imprimir_en_binario(uint32_t in) {
 	PRINTF("Número en binario: 0b");
 	for (int i = 31; i >= 0; i--) {
 		if (in & (1u << i)) {
@@ -41,12 +41,12 @@ uint32_t systic_get(void) {
 	return SysTick->VAL;
 }
 
-int main() {
+int main(void) {
 	char num_str[10];
 	char ch;
 	int i = 0;
 	uint32_t inicio;
-	unsigned int reversed;
+	uint32_t reversed;
 	uint32_t fin;
 	uint32_t ciclosCPU;
 
@@ -66,8 +66,8 @@ int main() {
 
 	num_str[i] = '\0';
 	
-	unsigned int num = atoi(num_str);
-	PRINTF("\r\nNumero a invertir bit a bit: %d\r\n", num);
+	uint32_t num = atoi(num_str);
+	PRINTF("\r\nNumero a invertir bit a bit: %u\r\n", num);
 	imprimir_en_binario(num);
 
 	systic_conf();
@@ -78,7 +78,7 @@ int main() {
 	fin = systic_get();
 	ciclosCPU = (inicio - fin) & 0xFFFFFF; // realmente son ticks de systick pero como la cpu tiene la misma frecuencia que el systick son equivalentes
 
-	PRINTF("Numero invertido bit a bit: %d\r\n", reversed);
+	PRINTF("Numero invertido bit a bit: %u\r\n", reversed);
 	imprimir_en_binario(reversed);
 
 	PRINTF("Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) \r\n"
