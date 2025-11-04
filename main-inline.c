@@ -12,23 +12,41 @@ uint32_t reverse_int(uint32_t in) {
 	".syntax unified\n"
 	
 	"movs   r3, %[IN]\n"
-        "movs   r2, #32\n"
+        "movs   r2, #8\n"
         "movs   %[OUT], #0\n"
-        "movs   r4, #1\n"
     "1:\n"
-        "movs   r1, r4\n"
-        "lsls   %[OUT], #1\n"      
-        "ands   r1, r3\n"           
-        "subs   r2, r2, #1\n"            
+        "movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
         "orrs   %[OUT], r1\n"        
         "lsrs   r3, r3, #1\n"           
-        "cmp    r2, #0\n"
+	
+        "movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+ 
+	"movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+
+        "movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+
+	"subs   r2, r2, #1\n" 
+	"cmp    r2, #0\n"
         "bne    1b\n"
 	
 	: [OUT] "=l" (out)
 	: [IN] "l" (in)
 
-	: "r1", "r2", "r3", "r4", "cc"
+	: "r1", "r2", "r3", "cc"
 	);
 	return out;
 }

@@ -1,1 +1,176 @@
 
+A versión ofrecida polo compilador para a función de reverse_int é:
+
+00000000 <reverse_int>:
+   0:	0003      	movs	r3, r0
+   2:	b510      	push	{r4, lr}
+   4:	2220      	movs	r2, #32
+   6:	2000      	movs	r0, #0
+   8:	2401      	movs	r4, #1
+   a:	0021      	movs	r1, r4
+   c:	0040      	lsls	r0, r0, #1
+   e:	4019      	ands	r1, r3
+  10:	3a01      	subs	r2, #1
+  12:	4308      	orrs	r0, r1
+  14:	085b      	lsrs	r3, r3, #1
+  16:	2a00      	cmp	r2, #0
+  18:	d1f7      	bne.n	a <reverse_int+0xa>
+  1a:	bd10      	pop	{r4, pc}
+
+Esta información obtivose co comando "arm-none-eabi-objdump -d main-c.o" 
+despois de executar make all.
+
+Para medir a eficacia deste código e poder comparalo con outras implementacións 
+axudaremonos do timer SysTick que está integrado no core do procesador.
+
+Tomamos entón coma unidade de medida os ticks do SysTick, como a frecuencia de este 
+timer e a da CPU é a mesma, podemos consideralos ciclos de CPU.
+
+Para o caso do main-c.c, é dicir, para o código proporcionado e que o compilador 
+optimiza, a execución da función tarda uns 295 ciclos.
+
+Introduce un número enteiro, max 9 dixitos
+999999999
+Numero a invertir bit a bit: 999999999
+Número en binario: 0b00111011 10011010 11001001 11111111 
+Numero invertido bit a bit: 4287846876
+Número en binario: 0b11111111 10010011 01011001 11011100 
+Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) 
+para la ejecución de la función de inversion de bits = 295
+
+Debemos entón mellorar a implementación en ensamblador para reducir o número de ciclos.
+Para comezar se nos fixamos no código o rexistro número 4 non está facendo nada realmente, podemos
+fusionar 2 operacións movs en unha soa.
+
+(movs	r4, #1 ) ----\	
+		 =====>>> (movs r1, #1)	
+(movs	r1, r4 ) ----/ 
+
+Continuando coa optimización, simplemente aplicouse a estratexia de loop unrolling, de forma que reducimos
+de forma considerable o número de iteracións do bucle. Reducir o número de iteracións é moi beneficioso pois
+eso implica que se realizarán menos comparacións (cmp r2, #0), menos saltos (bne .L2) e menos restas (subs r2, #1). 
+
+De esta forma simplemente ordenando un pouco o código en ensamblador, repetindoo un número adecuado de veces 
+e reducindo o número de iteracións, a eficiencia do noso programa aumentará significativamente.
+
+A miña versión optimizada implementada inline en C é:
+
+uint32_t reverse_int(uint32_t in) {
+	uint32_t out;
+	asm volatile (
+	".syntax unified\n"
+	
+	"movs   r3, %[IN]\n"
+        "movs   r2, #8\n"
+        "movs   %[OUT], #0\n"
+    "1:\n"
+        "movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+	
+        "movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+ 
+	"movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+
+        "movs   r1, #1\n"
+        "lsls   %[OUT], %[OUT], #1\n"      
+        "ands   r1, r3\n"              
+        "orrs   %[OUT], r1\n"        
+        "lsrs   r3, r3, #1\n"           
+
+	"subs   r2, r2, #1\n" 
+	"cmp    r2, #0\n"
+        "bne    1b\n"
+	
+	: [OUT] "=l" (out)
+	: [IN] "l" (in)
+
+	: "r1", "r2", "r3", "cc"
+	);
+	return out;
+}
+
+Para o caso do main-inline.c a execución da función tarda uns 203 ciclos.
+
+Introduce un número enteiro, max 9 dixitos
+999999999
+Numero a invertir bit a bit: 999999999
+Número en binario: 0b00111011 10011010 11001001 11111111 
+Numero invertido bit a bit: 4287846876
+Número en binario: 0b11111111 10010011 01011001 11011100 
+Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) 
+para la ejecución de la función de inversion de bits = 203
+
+Porducese entón unha mellora de arredor do 30%
+
+E a versión nun .s aparte:
+
+	.text
+	.syntax unified
+	.thumb
+	.cpu cortex-m0plus
+	.type reverse_int, %function
+	.global reverse_int
+
+reverse_int:
+	movs	r3, r0	
+	movs	r2, #8
+	movs	r0, #0	
+.L2:	
+	movs	r1, #1
+	lsls	r0, r0, #1	
+	ands	r1, r3	
+	orrs	r0, r1	
+	lsrs	r3, r3, #1	
+
+	movs	r1, #1
+	lsls	r0, r0, #1	
+	ands	r1, r3	
+	orrs	r0, r1	
+	lsrs	r3, r3, #1
+
+	movs	r1, #1
+	lsls	r0, r0, #1	
+	ands	r1, r3	
+	orrs	r0, r1	
+	lsrs	r3, r3, #1	
+
+	movs	r1, #1
+	lsls	r0, r0, #1	
+	ands	r1, r3	
+	orrs	r0, r1	
+	lsrs	r3, r3, #1
+
+	subs	r2, r2, #1
+	cmp	r2, #0	
+	bne	.L2	
+
+	bx lr
+	.end
+
+Para o caso do main-link-ASM.c xunto co reverse.s, a execución da función tarda uns 205 ciclos.
+
+Introduce un número enteiro, max 9 dixitos
+999999999
+Numero a invertir bit a bit: 999999999
+Número en binario: 0b00111011 10011010 11001001 11111111 
+Numero invertido bit a bit: 4287846876
+Número en binario: 0b11111111 10010011 01011001 11011100 
+Número de ticks de SysTick (equivalentes a ciclos de CPU por tener ambos la misma frecuencia) 
+para la ejecución de la función de inversion de bits = 205
+
+Porducese entón unha mellora de arredor do 30%
+Neste caso vemos que o código linkado de forma externa tarda 2 ciclos máis ca o inline, 
+esto é debido a que o compilador pode optimizar todo o contexto no caso do inline pois conoce
+a función ao completo, pero no caso do linkado desde un .s externo non, fai entón algunhas operacións 
+extra para asegurarse da corrección do programa e o linkado que producen esta pequena diferencia.
