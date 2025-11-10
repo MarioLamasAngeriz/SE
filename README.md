@@ -1,30 +1,12 @@
-# Práctica 4 - SE 24/25
+# Práctica 5 - IPC
 
-Nesta práctica veremos como empregar algo de código ensamblador nos nosos proxectos. En xeral, isto faise cando é preciso optimizar algunha parte do código respecto ao código máquina que o compilador proporciona, pero no noso caso imos facelo para un caso concreto e sinxelo.
+Fai unha implementación dun sistema multifío de produtores e consumidores, que se comuniquen mediante unha cola de mensaxes:
+- Os produtores van poñendo datos (empregaremos datos arbitrarios) na cola de mensaxes, empregando un pequeno delay para simular que lle leva un tempo a tarefa de obter cada dato. 
+- Os consumidores van recollendo cada dato da cola, simulando tamén un procesamento do mesmo con outro pequeno delay.
+ 
+No LCD móstrase, nos dous díxitos da dereita o número actual de produtores e de consumidores (un díxito para mostrar cada un destes números), mentres que os dous díxitos da esquerda mostran a cantidade de datos pendentes na cola de mensaxes (>=0): cada vez que un produtor introduce un novo dato, aumenta (+1) esa conta, que diminue (-1) cada consumidor cando recolle un elemento para procesalo.
 
-Proporciona unha implementación en ensamblador para unha función que rote todos os bits dun número enteiro que recibe como parámetro: reverse_int(). Ofrece unha implementación que *ti* penses que pode ser máis eficiente que a ofrecida polo compilador cando traduce este código C co nivel de optimización -Ofast:
-
-```c
-unsigned int reverse_int(unsigned int in)
-{
-  unsigned int out = 0;
-  // Devolve o enteiro invertido bit a bit
-
-  for (unsigned int i=0; i<32; i++) {
-    out = out << 1;
-    out |= in & 1;
-    in = in >> 1;
-  }
-
-  return out;
-}
-```
-
-Fai dúas implementacións desa función:
-
-1. Función C con código ensamblador embebido no código C (inline ASM).
-
-2. Función completa en ensamblador nun arquivo .s propio que haberá que ensamblar para obter o código obxecto que logo enlazar co resto.
-
-Inclúe na entrega os arquivos .c e .s correspondentes, xunto a un arquivo de texto explicando a túa mellora sobre a versión ofrecida polo compilador. Non pasa nada se a túa mellora, ao final, non é máis eficiente, pero xustifica as túas decisións.
+Ten que haber intercambio efectivo de datos entre os produtores e consumidores, aínda que sexan datos arbitrarios.
+ 
+A nosa implementación empregará FreeRTOS ou outro RTOS se o preferides. Cos botóns poderás cambiar o número de produtores e consumidores: o botón esquerdo conmutará entre 0-1-2-3-4-5 produtores, e o botón dereito entre 0-1-2-3-4-5 consumidores.Todos os fíos terán a mesma prioridade.
 
