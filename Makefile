@@ -5,13 +5,13 @@ CFLAGS=$(INCLUDES) -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
 INCLUDES=-I. -I./includes/ -I./freertos/ 
 TARGET=main.elf
 
-OBJECTS=main.o startup.o $(OBJECTS_RTOS) $(OBJECTS_LED) 
+OBJECTS=main.o startup.o $(OBJECTS_LCD) $(OBJECTS_RTOS)
 
 OBJECTS_RTOS=./freertos/list.o ./freertos/queue.o ./freertos/tasks.o ./freertos/heap_2.o ./freertos/port.o ./freertos/timers.o
 
 OBJECTS_LCD=./includes/lcd.o
 
-all: $(TARGET)
+all: $(TARGET) flash
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(LDFLAGS) $^ -o $@

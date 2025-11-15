@@ -1,35 +1,81 @@
 #include "includes/MKL46Z4.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "includes/lcd.h"
+#include <stdint.h>
 
-void led_green_init()
-{
-	SIM_COPC = 0;
-	SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
-	PORTD_PCR5 = PORT_PCR_MUX(1);
-	GPIOD_PDDR |= (1 << 5);
-	GPIOD_PSOR = (1 << 5);
+uint16_t datosArbitrarios[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+uint16_t productores = 0;
+uint16_t consumidores = 0;
+uint32_t mensajes_cola = 0;
+
+void buttons_init(void) {
+	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
+
+	PORTC->PCR[3] |= PORT_PCR_MUX(1);
+	PORTC->PCR[3] |= PORT_PCR_PE_MASK;
+	PORTC->PCR[3] |= PORT_PCR_PS_MASK;
+	PORTC->PCR[3] |= PORT_PCR_IRQC(0x0A);
+	GPIOC->PDDR &= ~(1 << 3);
+				 
+	PORTC->PCR[12] |= PORT_PCR_MUX(1);
+	PORTC->PCR[12] |= PORT_PCR_PE_MASK;
+	PORTC->PCR[12] |= PORT_PCR_PS_MASK; 
+	PORTC->PCR[12] |= PORT_PCR_IRQC(0x0A);
+	GPIOC->PDDR &= ~(1 << 12);
 }
 
-void led_green_toggle()
-{
-	GPIOD_PTOR = (1 << 5);
+void queue_init(void) {
+
 }
 
-void led_red_init()
-{
-	SIM_COPC = 0;
-	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;
-	PORTE_PCR29 = PORT_PCR_MUX(1);
-	GPIOE_PDDR |= (1 << 29);
-	GPIOE_PSOR = (1 << 29);
+void conmutar_consumidores(void) {
+	if (consumidores < 5) {
+		consumidores++;
+	} else {
+		consumidores = 0;
+	}
 }
 
-void led_red_toggle(void)
-{
-	GPIOE_PTOR = (1 << 29);
+void conmutar_productores(void) {
+	if (productores < 5) {
+		productores++;
+	} else {
+		productores = 0;
+	}
 }
 
+void display_info(void) {
+
+	lcd_set(1, mensajes_cola / 10);
+	lcd_set(2, mensajes_cola % 10);
+
+	lcd_set(3, productores);
+	lcd_set(4, consumidores);
+
+}
+
+void main_loop(void) {
+
+	while (1) {
+		display_info();
+	}
+
+}
+
+int main(void) {
+
+	lcd_ini();
+	buttons_init();
+
+	main_loop();
+
+	return 0;
+
+}
+
+/*
 void taskLedGreen(void *pvParameters)
 {
     for (;;) {
@@ -46,24 +92,17 @@ void taskLedRed(void *pvParameters)
     }
 }
 
-int main(void)
-{
-	led_green_init();
-	led_red_init();
-
-	/* create green led task */
+	* create green led task *
 	xTaskCreate(taskLedGreen, (signed char *)"TaskLedGreen", 
 		configMINIMAL_STACK_SIZE, (void *)NULL, 1, NULL);
 
-	/* create red led task */
+	* create red led task *
 	xTaskCreate(taskLedRed, (signed char *)"TaskLedRed", 
 		configMINIMAL_STACK_SIZE, (void *)NULL, 1, NULL);
 	
-	/* start the scheduler */
+	* start the scheduler *
 	vTaskStartScheduler();
 
-	/* should never reach here! */
+	* should never reach here! *
 	for (;;);
-
-	return 0;
-}
+*/

@@ -65,7 +65,7 @@ void lcd_ini(void)
     LCD_GCR_CPSEL_MASK |   //Set LCD_GCR_CPSEL to use capacitor charge pump
     LCD_GCR_LADJ(0x03) |   //Set LCD_GCR_LADJ to 11, slow clock rate = lower power, but higher load capacitance on the LCD requires higher clock speed
     //LCD_GCR_VSUPPLY |    //Clear LCD_GCR_VSUPPLY, drive VLL3 externally
-    LCD_GCR_PADSAFE_MASK | //Set LCD_GCR_PADSAFE, leave enabled during configuration process
+    LCD_GCR_PADSAFE(1) | //Set LCD_GCR_PADSAFE, leave enabled during configuration process
     //LCD_GCR_FDCIEN_MASK |    //Clear LCD_GCR_FDCIEN, No interrupt from fault dection
     LCD_GCR_FFR_MASK |         //Set LCD_GCR_FFR, allow an LCD Frame Frequency of 46.6Hz to 146.2Hz.  Disable to change range to 23.3Hz to 73.1Hz
     //LCD_GCR_LCDDOZE_MASK |   //Clear LCD_GCR_LCDDOZE, allows LCD peripheral to run even in doze mode.  Set to disable LCD in doze mode
@@ -77,7 +77,7 @@ void lcd_ini(void)
   // Configure LCD_SEG_AR  - Auxiliary Register, controls blinking of LCD
   //
   LCD->AR =
-    LCD_AR_BLINK(0) | //Clear LCD_SEG_AR_BLINK, Disable SLCD blinking. Enable to make LCD Blink
+    ~LCD_AR_BLINK_MASK | //Clear LCD_SEG_AR_BLINK, Disable SLCD blinking. Enable to make LCD Blink
     //LCD_AR_ALT_MASK |   //Clear LCD_SEG_AR_ALT, if enabled LCD back plane sequencer changes to an alternate display.  Only functional if DUTY[2:0] is less than 100(binary). This allows a blink screen that is not blank
     //LCD_AR_BLANK_MASK | //Clear LCD_SEG_AR_BLANK, asserting bit clears all segments in LCD.
     //LCD_AR_BMODE_MASK | //Clear LCD_SEG_AR_BMODE, if enabled displays alternate display during blink period instead of blank.
