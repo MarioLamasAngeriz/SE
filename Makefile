@@ -1,47 +1,28 @@
 CC=arm-none-eabi-gcc
-CFLAGS=-I ./includes -Ofast -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
-LDFLAGS=-Ofast -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Tlink.ld
+LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
+CFLAGS=$(INCLUDES) -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
 
-AS=arm-none-eabi-as
-ASFLAGS=-mthumb -mcpu=cortex-m0plus
+INCLUDES=-I. -I./includes/ -I./freertos/ -I./freertos/include/ -I./freertos/include/private/ -I./freertos/portable/GCC/ARM_CM0/ -I./freertos/portable/low_power_tickless/ -I./freertos/portable/MemMang/ 
 
-OBJECTS=startup.o includes/board.o includes/clock_config.o includes/fsl_clock.o includes/fsl_common.o includes/fsl_debug_console.o includes/fsl_gpio.o includes/pin_mux.o includes/fsl_smc.o includes/fsl_log.o includes/fsl_str.o includes/fsl_ftfx_cache.o includes/fsl_ftfx_controller.o includes/fsl_ftfx_flash.o includes/fsl_io.o includes/fsl_uart.o includes/fsl_lpsci.o includes/fsl_assert.o includes/system_MKL46Z4.o
+TARGET=main.elf
+OBJECTS=main.o startup.o $(OBJECTS_RTOS) $(OBJECTS_LED) 
 
-TARGET-C=main-c.elf
-OBJECTS-C=main-c.o $(OBJECTS)
+OBJECTS_RTOS=./freertos/list.o ./freertos/queue.o ./freertos/tasks.o ./freertos/portable/MemMang/heap_2.o ./freertos/portable/GCC/ARM_CM0/port.o
+OBJECTS_LED=includes/fsl_gpio.o includes/fsl_clock.o includes/fsl_common.o includes/board.o includes/led/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o includes/fsl_debug_console.o includes/fsl_smc.o includes/fsl_log.o includes/fsl_str.o includes/fsl_ftfx_cache.o includes/fsl_ftfx_controller.o includes/fsl_io.o includes/fsl_uart.o includes/fsl_lpsci.o includes/fsl_assert.o
 
-TARGET-INLINE=main-inline.elf
-OBJECTS-INLINE=main-inline.o $(OBJECTS)
+all: $(TARGET)
 
-TARGET-LINK-ASM=main-link-ASM.elf
-OBJECTS-LINK-ASM=main-link-ASM.o reverse.o $(OBJECTS)
+$(TARGET): $(OBJECTS)
+	$(CC) $(LDFLAGS) $^ -o $@
 
-all: $(TARGET-C) $(TARGET-INLINE) $(TARGET-LINK-ASM)
-
-%.o: %.s
-	$(AS) $(ASFLAGS) -o $@ $<
-
-$(TARGET-C): $(OBJECTS-C)
-	$(CC) $(LDFLAGS) -Wl,-Map,main-c.map $^ -o $@
-
-$(TARGET-INLINE): $(OBJECTS-INLINE)
-	$(CC) $(LDFLAGS) -Wl,-Map,main-inline.map $^ -o $@
-
-$(TARGET-LINK-ASM): $(OBJECTS-LINK-ASM)
-	$(CC) $(LDFLAGS) -Wl,-Map,main-link-ASM.map $^ -o $@
-
-flash-c: $(TARGET-C)
-	openocd -f openocd.cfg -c "program $< verify reset exit"
-
-flash-inline: $(TARGET-INLINE)
-	openocd -f openocd.cfg -c "program $< verify reset exit"
-
-flash-link-ASM: $(TARGET-LINK-ASM)
+flash: $(TARGET)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
 clean:
-	$(RM) *.o *.map includes/*.o
+	$(RM) *.o *.map
 
 cleanall:
-	$(RM) *.o *.elf *.map includes/*.o
+	$(RM) *.o *.elf *.map $(OBJECTS)
+
+
 
