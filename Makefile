@@ -2,7 +2,7 @@ CC=arm-none-eabi-gcc
 LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
 CFLAGS=$(INCLUDES) -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
 
-INCLUDES=-I. -I./includes/ -I./freertos/ -I./freertos/include/ -I./freertos/include/private/ -I./freertos/portable/GCC/ARM_CM0/ -I./freertos/portable/low_power_tickless/ -I./freertos/portable/MemMang/ 
+INCLUDES=-I. -I./includes/ -I./freertos/ 
 
 TARGET=main.elf
 OBJECTS=main.o startup.o $(OBJECTS_RTOS) $(OBJECTS_LED) 
