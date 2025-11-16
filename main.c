@@ -1,5 +1,4 @@
 #include "includes/MKL46Z4.h"
-#include "freertos/FreeRTOS.h"
 #include "includes/lcd.h"
 #include <stdint.h>
 
@@ -68,7 +67,6 @@ void main_loop(void) {
 }
 
 void irclk_ini(void) {
-
 	MCG->C1 = MCG_C1_IRCLKEN(1) | MCG_C1_IREFSTEN(1);
 	MCG->C2 = MCG_C2_IRCS(0); //0 32KHZ internal reference clock; 1= 4MHz irc
 }
@@ -76,12 +74,12 @@ void irclk_ini(void) {
 
 int main(void) {
 
-	irclk_ini();
+	//irclk_ini();
 	lcd_ini();
 	lcd_display_dec(2);
 
-	//buttons_init();
-	//main_loop();
+	buttons_init();
+	main_loop();
 
 	return 0;
 
