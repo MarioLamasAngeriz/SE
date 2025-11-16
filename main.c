@@ -4,9 +4,9 @@
 
 uint16_t datosArbitrarios[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-uint16_t productores = 0;
-uint16_t consumidores = 0;
-uint32_t mensajes_cola = 0;
+uint16_t productores = 1;
+uint16_t consumidores = 2;
+uint32_t mensajes_cola = 35;
 
 void delay (uint32_t ms) {
 	volatile int i;
@@ -20,7 +20,7 @@ void buttons_init(void) {
 	PORTC->PCR[3] |= PORT_PCR_PE_MASK;
 	PORTC->PCR[3] |= PORT_PCR_PS_MASK;
 	GPIOC->PDDR &= ~(1 << 3);
-				 
+				
 	PORTC->PCR[12] |= PORT_PCR_MUX(1);
 	PORTC->PCR[12] |= PORT_PCR_PE_MASK;
 	PORTC->PCR[12] |= PORT_PCR_PS_MASK; 
@@ -74,7 +74,7 @@ void irclk_ini(void) {
 
 int main(void) {
 
-	//irclk_ini();
+	irclk_ini();
 	lcd_ini();
 	lcd_display_dec(2);
 

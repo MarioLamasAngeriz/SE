@@ -76,9 +76,9 @@ extern int main(void);
 void ResetHandler(void);
 static void DefaultIntHandler(void);
 
-extern void xPortPendSVHandler( void );
-extern void xPortSysTickHandler( void );
-extern void vPortSVCHandler( void ); 
+//extern void xPortPendSVHandler( void );
+//extern void xPortSysTickHandler( void );
+//extern void vPortSVCHandler( void ); 
 
 //*****************************************************************************
 // The minimal vector table for a Cortex M0+.  Note that the proper constructs
