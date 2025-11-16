@@ -10,6 +10,11 @@ uint16_t productores = 0;
 uint16_t consumidores = 0;
 uint32_t mensajes_cola = 0;
 
+void delay (uint32_t ms) {
+	volatile int i;
+	for (i = 0; i < ms * 1000; i++);
+}
+
 void buttons_init(void) {
 	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
 
@@ -60,6 +65,7 @@ void main_loop(void) {
 
 	while (1) {
 		display_info();
+		delay(1000);
 	}
 
 }
