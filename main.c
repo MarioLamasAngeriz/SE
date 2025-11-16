@@ -1,6 +1,5 @@
 #include "includes/MKL46Z4.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "includes/lcd.h"
 #include <stdint.h>
 
@@ -21,13 +20,11 @@ void buttons_init(void) {
 	PORTC->PCR[3] |= PORT_PCR_MUX(1);
 	PORTC->PCR[3] |= PORT_PCR_PE_MASK;
 	PORTC->PCR[3] |= PORT_PCR_PS_MASK;
-	PORTC->PCR[3] |= PORT_PCR_IRQC(0x0A);
 	GPIOC->PDDR &= ~(1 << 3);
 				 
 	PORTC->PCR[12] |= PORT_PCR_MUX(1);
 	PORTC->PCR[12] |= PORT_PCR_PE_MASK;
 	PORTC->PCR[12] |= PORT_PCR_PS_MASK; 
-	PORTC->PCR[12] |= PORT_PCR_IRQC(0x0A);
 	GPIOC->PDDR &= ~(1 << 12);
 }
 
@@ -65,17 +62,26 @@ void main_loop(void) {
 
 	while (1) {
 		display_info();
-		delay(1000);
+		delay(1000000);
 	}
 
 }
 
+void irclk_ini(void) {
+
+	MCG->C1 = MCG_C1_IRCLKEN(1) | MCG_C1_IREFSTEN(1);
+	MCG->C2 = MCG_C2_IRCS(0); //0 32KHZ internal reference clock; 1= 4MHz irc
+}
+
+
 int main(void) {
 
+	irclk_ini();
 	lcd_ini();
-	buttons_init();
+	lcd_display_dec(2);
 
-	main_loop();
+	//buttons_init();
+	//main_loop();
 
 	return 0;
 
