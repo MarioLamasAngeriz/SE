@@ -56,8 +56,8 @@ void lcd_ini(void)
     // Set LCD_GCR_SOURCE, LCD_GCR_ALTSOURCE / LCD_GCR_ALTDIV
     // Part of setting clock source to OSCERCLK, or external oscillator
     // See pgs 135, 111, 124 and 869-873 in KL46 doc for references
-    LCD_GCR_SOURCE(1) |    //Select AltClk instead of default (ERCLK32K)
-    LCD_GCR_ALTSOURCE(0) | //Select MCGIRCLK
+    (1 << LCD_GCR_SOURCE_SHIFT) |    //Select AltClk instead of default (ERCLK32K)
+    (0 << LCD_GCR_ALTSOURCE_SHIFT) | //Select MCGIRCLK
     LCD_GCR_ALTDIV(0) |    //No divide alt clk
 
     //LCD_GCR_RVEN_MASK |  //Clear LCD_GCR_RVEN, disable voltage regulator
@@ -77,7 +77,7 @@ void lcd_ini(void)
   // Configure LCD_SEG_AR  - Auxiliary Register, controls blinking of LCD
   //
   LCD->AR =
-    LCD_AR_BLINK(0) | //Clear LCD_SEG_AR_BLINK, Disable SLCD blinking. Enable to make LCD Blink
+    (0 << LCD_AR_BLINK_SHIFT) | //Clear LCD_SEG_AR_BLINK, Disable SLCD blinking. Enable to make LCD Blink
     //LCD_AR_ALT_MASK |   //Clear LCD_SEG_AR_ALT, if enabled LCD back plane sequencer changes to an alternate display.  Only functional if DUTY[2:0] is less than 100(binary). This allows a blink screen that is not blank
     //LCD_AR_BLANK_MASK | //Clear LCD_SEG_AR_BLANK, asserting bit clears all segments in LCD.
     //LCD_AR_BMODE_MASK | //Clear LCD_SEG_AR_BMODE, if enabled displays alternate display during blink period instead of blank.

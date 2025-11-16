@@ -27,8 +27,8 @@ void queue_init(void) {
 }
 
 void iniciar_reloxos(void) {
-	MCG->C1 = MCG_C1_IRCLKEN(1) | MCG_C1_IREFSTEN(1);
-	MCG->C2 = MCG_C2_IRCS(0); //0 32KHZ internal reference clock; 1= 4MHz irc
+	MCG->C1 = MCG_C1_IRCLKEN_MASK | MCG_C1_IREFSTEN_MASK;
+	MCG->C2 &= ~MCG_C2_IRCS_MASK; //0 32KHZ internal reference clock; 1= 4MHz irc
 }
 
 void dato_correcto(void) {
@@ -188,19 +188,6 @@ void main_loop(void * pvParameters) {
 	}
 }
 
-void led_green_toggle()
-{
-	GPIOD->PTOR = (1 << 5);
-}
-
-void taskLedRed(void *pvParameters)
-{
-    for (;;) {
-        led_green_toggle();
-        vTaskDelay(500/portTICK_RATE_MS);
-    }
-}
-
 int main(void) {
 
 	lcd_ini();
@@ -210,9 +197,7 @@ int main(void) {
 	buttons_init();
 	iniciar_reloxos();
 
-	//xTaskCreate(main_loop, "main_loop", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-
-	xTaskCreate(taskLedRed, "TaskLedRed", configMINIMAL_STACK_SIZE, (void *)NULL, 1, NULL);
+	xTaskCreate(main_loop, "main_loop", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
 	//inicia FreeRTOS
 	vTaskStartScheduler();

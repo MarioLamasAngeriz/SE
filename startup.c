@@ -76,9 +76,9 @@ extern int main(void);
 void ResetHandler(void);
 static void DefaultIntHandler(void);
 
-//extern void xPortPendSVHandler( void );
-//extern void xPortSysTickHandler( void );
-//extern void vPortSVCHandler( void ); 
+extern void xPortPendSVHandler( void );
+extern void xPortSysTickHandler( void );
+extern void vPortSVCHandler( void ); 
 
 //*****************************************************************************
 // The minimal vector table for a Cortex M0+.  Note that the proper constructs
@@ -93,10 +93,10 @@ void (* const g_pfnVectors[])(void) =
     NMIIntHandler,                          // The NMI handler
     HardFaultIntHandler,                    // The hard fault handler
     0, 0, 0, 0, 0, 0, 0,                    // Reserved
-    SVCIntHandler, //vPortSVCHandler,                          // SVCall handler
+    /*SVCIntHandler,*/ vPortSVCHandler,                          // SVCall handler
     0, 0,                                   // Reserved
-    PendSVIntHandler,//xPortPendSVHandler,                       // The PendSV handler
-    SysTickIntHandler,//xPortSysTickHandler,                      // The SysTick handler
+    /*PendSVIntHandler,*/ xPortPendSVHandler,                       // The PendSV handler
+    /*SysTickIntHandler,*/ xPortSysTickHandler,                      // The SysTick handler
 
     DMA0IntHandler,                         // DMA channel 0 transfer complete
                                             // and error handler
@@ -181,10 +181,10 @@ void Default_ResetHandler(void)
 #pragma weak MemManageIntHandler = DefaultIntHandler
 #pragma weak BusFaultIntHandler = DefaultIntHandler
 #pragma weak UsageFaultIntHandler = DefaultIntHandler
-#pragma weak SVCIntHandler = DefaultIntHandler //
+//#pragma weak SVCIntHandler = DefaultIntHandler //
 #pragma weak DebugMonIntHandler = DefaultIntHandler
-#pragma weak PendSVIntHandler = DefaultIntHandler //
-#pragma weak SysTickIntHandler = DefaultIntHandler //
+//#pragma weak PendSVIntHandler = DefaultIntHandler //
+//#pragma weak SysTickIntHandler = DefaultIntHandler //
 #pragma weak DMA0IntHandler = Default_ResetHandler
 #pragma weak DMA1IntHandler = Default_ResetHandler
 #pragma weak DMA2IntHandler = Default_ResetHandler
