@@ -48,11 +48,11 @@ void conmutar_productores(void) {
 
 void display_info(void) {
 
-	lcd_set(1, mensajes_cola / 10);
-	lcd_set(2, mensajes_cola % 10);
+	lcd_set(mensajes_cola / 10, 1);
+	lcd_set(mensajes_cola % 10, 2);
 
-	lcd_set(3, productores);
-	lcd_set(4, consumidores);
+	lcd_set(productores, 3);
+	lcd_set(consumidores, 4);
 
 }
 
