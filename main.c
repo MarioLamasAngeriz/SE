@@ -5,6 +5,7 @@
 #include "includes/lcd.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
+#include "freertos/projdefs.h"
 
 uint16_t datosArbitrarios[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -31,13 +32,13 @@ void iniciar_reloxos(void) {
 	MCG->C2 &= ~MCG_C2_IRCS_MASK; //0 32KHZ internal reference clock; 1= 4MHz irc
 }
 
-void dato_correcto(void) {
+void dato_enviado(void) {
 	GPIOD->PCOR = (1 << 5);
 	vTaskDelay(pdMS_TO_TICKS(250));;
 	GPIOD->PSOR = (1 << 5);
 }
 
-void dato_incorrecto(void) {
+void dato_recibido(void) {
 	GPIOE->PCOR = (1 << 29);
 	vTaskDelay(pdMS_TO_TICKS(250));
 	GPIOE->PSOR = (1 << 29);
@@ -52,12 +53,12 @@ void init_arrays(void) {
 
 void leds_init(void) {
 	SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK;
-	PORTD->PCR[5] |= PORT_PCR_MUX_MASK;
+	PORTD->PCR[5] |= PORT_PCR_MUX(1);
 	GPIOD->PDDR |= (1 << 5);
 	GPIOD->PSOR |= (1 << 5);
 
 	SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;
-	PORTE->PCR[29] |= PORT_PCR_MUX_MASK;
+	PORTE->PCR[29] |= PORT_PCR_MUX(1);
 	GPIOE->PDDR |= (1 << 29);
 	GPIOE->PSOR |= (1 << 29);
 }
@@ -74,6 +75,14 @@ void buttons_init(void) {
 	PORTC->PCR[12] |= PORT_PCR_PE_MASK;
 	PORTC->PCR[12] |= PORT_PCR_PS_MASK; 
 	GPIOC->PDDR &= ~(1 << 12);
+}
+
+void display_info(void) {
+	mensajes_cola = uxQueueMessagesWaiting(colaMensajes);
+	lcd_set(mensajes_cola / 10, 1);
+	lcd_set(mensajes_cola % 10, 2);
+	lcd_set(productores, 3);
+	lcd_set(consumidores, 4);
 }
 
 void productor(void* pvParameters) {
@@ -93,9 +102,8 @@ void productor(void* pvParameters) {
 	
 		//envia mensaje a la cola, espera 100 ticks si llena
 		if (xQueueSend(colaMensajes, &mensajeEnviado, pdMS_TO_TICKS(100)) == pdPASS) {
-			//dato_correcto();
-		} else {
-			//dato_incorrecto();
+			dato_enviado();
+			display_info();
 		}
 		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
@@ -110,13 +118,12 @@ void consumidor(void* pvParameters) {
 		
 			uint16_t indice = mensajeRecibido.indice;
 			uint16_t dato = mensajeRecibido.dato;
-			vTaskDelay(pdMS_TO_TICKS(1000));
 
 			if (dato == datosArbitrarios[indice]) {
-				dato_correcto();
-			} else {
-				dato_incorrecto();
-			}
+				dato_recibido();
+				display_info();
+			} 
+			vTaskDelay(pdMS_TO_TICKS(1000));
 		}
 	}
 }
@@ -151,14 +158,6 @@ void conmutar_productores(void) {
 	}
 }
 
-void display_info(void) {
-	mensajes_cola = uxQueueMessagesWaiting(colaMensajes);
-	lcd_set(mensajes_cola / 10, 1);
-	lcd_set(mensajes_cola % 10, 2);
-	lcd_set(productores, 3);
-	lcd_set(consumidores, 4);
-}
-
 void main_loop(void * pvParameters) {
 
 	uint16_t but_izq_prev = 0;
@@ -184,7 +183,7 @@ void main_loop(void * pvParameters) {
 		but_izq_prev = but_izq;
 		but_der_prev = but_der;
 
-		vTaskDelay(pdMS_TO_TICKS(100));
+		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 }
 
