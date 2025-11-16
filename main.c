@@ -86,7 +86,6 @@ void display_info(void) {
 }
 
 void productor(void* pvParameters) {
-
 	uint16_t indice = 0;
 	uint16_t dato;
 	mensaje_t mensajeEnviado;
@@ -110,7 +109,6 @@ void productor(void* pvParameters) {
 }
 
 void consumidor(void* pvParameters) {
-
 	mensaje_t mensajeRecibido;
 	while (1) {
 		//espera infinito por mensaje
@@ -139,6 +137,7 @@ void conmutar_consumidores(void) {
 				array_consumidores[i] = NULL;
 			}
 		}
+		GPIOE->PSOR = (1 << 29);
 		consumidores = 0;
 	}
 }
@@ -154,12 +153,12 @@ void conmutar_productores(void) {
 				array_productores[i] = NULL;
 			}
 		}
+		GPIOD->PSOR = (1 << 5);
 		productores = 0;
 	}
 }
 
 void main_loop(void * pvParameters) {
-
 	uint16_t but_izq_prev = 0;
 	uint16_t but_der_prev = 0;
 
