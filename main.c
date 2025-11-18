@@ -159,8 +159,8 @@ void conmutar_productores(void) {
 }
 
 void main_loop(void * pvParameters) {
-	uint16_t but_izq_prev = 0;
-	uint16_t but_der_prev = 0;
+	uint16_t but_izq_prev = 1;
+	uint16_t but_der_prev = 1;
 
 	while (1) {
 
