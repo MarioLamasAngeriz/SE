@@ -9,10 +9,10 @@
 #include "includes/pin_mux.h"
 
 
-unsigned int reverse_int(unsigned int in) {
-	unsigned int out = 0;
+uint32_t reverse_bits(uint32_t in) {
+	uint32_t out = 0;
 	// Devolve o enteiro invertido bit a bit
-	for (unsigned int i=0; i<32; i++) {
+	for (uint32_t i=0; i<32; i++) {
 		out <<= 1;
 		out |= in & 1;
 		in >>= 1;
@@ -79,7 +79,7 @@ int main(void) {
 	tmp0_conf();
 	inicio = tmp0_get();
 	
-	reversed = reverse_int(num);
+	reversed = reverse_bits(num);
 	
 	fin = tmp0_get();
 		
@@ -92,6 +92,5 @@ int main(void) {
 	PRINTF("Número invertido bit a bit: %u\r\n", reversed);
 	imprimir_en_binario(reversed);
 
-	PRINTF("Número de ciclos de CPU\r\n"
-			"para a execución de la función de inversion de bits = %u\r\n", ciclosCPU);
+	PRINTF("Número de ciclos de CPU para a execución de la función de inversion de bits = %u\r\n", ciclosCPU);
 }
