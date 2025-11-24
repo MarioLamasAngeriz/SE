@@ -6,7 +6,15 @@
 #include "includes/board.h"
 #include "includes/pin_mux.h"
 
-extern uint32_t reverse_int(uint32_t in); //añadir algo?
+uint32_t reverse_int(uint32_t in) {
+	uint32_t out = 0;
+	for (uint32_t i=0; i<32; i++) {
+		out = out << 1;
+		out |= in & 1;
+		in = in >> 1;
+	}
+	return out;
+}
 
 void imprimir_en_binario(uint32_t in) {
 	PRINTF("Número en binario: 0b");
