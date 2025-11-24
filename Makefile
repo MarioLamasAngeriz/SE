@@ -7,36 +7,47 @@ ASFLAGS=-mthumb -mcpu=cortex-m0plus
 
 OBJECTS=startup.o includes/board.o includes/clock_config.o includes/fsl_clock.o includes/fsl_common.o includes/fsl_debug_console.o includes/fsl_gpio.o includes/pin_mux.o includes/fsl_smc.o includes/fsl_log.o includes/fsl_str.o includes/fsl_ftfx_cache.o includes/fsl_ftfx_controller.o includes/fsl_ftfx_flash.o includes/fsl_io.o includes/fsl_uart.o includes/fsl_lpsci.o includes/fsl_assert.o includes/system_MKL46Z4.o
 
-TARGET-C=main-c.elf
-OBJECTS-C=main-c.o $(OBJECTS)
+TARGET-1=reverse1.elf
+OBJECTS-1=reverse1.o $(OBJECTS)
 
-TARGET-INLINE=main-inline.elf
-OBJECTS-INLINE=main-inline.o $(OBJECTS)
+TARGET-2=main2.elf
+OBJECTS-2=main2.o reverse2.o $(OBJECTS)
 
-TARGET-LINK-ASM=main-link-ASM.elf
-OBJECTS-LINK-ASM=main-link-ASM.o reverse.o $(OBJECTS)
+TARGET-3=main3.elf
+OBJECTS-3=main3.o reverse3.o $(OBJECTS)
 
-all: $(TARGET-C) $(TARGET-INLINE) $(TARGET-LINK-ASM)
+TARGET-4=reverse4.elf
+OBJECTS-4=reverse4.o $(OBJECTS)
+
+all: $(TARGET-1) $(TARGET-2) $(TARGET-3) $(TARGET-4)
+
+#introducir variaciones de flags de optimización
 
 %.o: %.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(TARGET-C): $(OBJECTS-C)
-	$(CC) $(LDFLAGS) -Wl,-Map,main-c.map $^ -o $@
+$(TARGET-1): $(OBJECTS-1)
+	$(CC) $(LDFLAGS) -Wl,-Map,reverse1.map $^ -o $@
 
-$(TARGET-INLINE): $(OBJECTS-INLINE)
-	$(CC) $(LDFLAGS) -Wl,-Map,main-inline.map $^ -o $@
+$(TARGET-2): $(OBJECTS-2)
+	$(CC) $(LDFLAGS) -Wl,-Map,main2.map $^ -o $@
+	
+$(TARGET-3): $(OBJECTS-3)
+	$(CC) $(LDFLAGS) -Wl,-Map,main3.map $^ -o $@
 
-$(TARGET-LINK-ASM): $(OBJECTS-LINK-ASM)
-	$(CC) $(LDFLAGS) -Wl,-Map,main-link-ASM.map $^ -o $@
+$(TARGET-4): $(OBJECTS-4)
+	$(CC) $(LDFLAGS) -Wl,-Map,reverse4.map $^ -o $@
 
-flash-c: $(TARGET-C)
+flash-1: $(TARGET-1)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
-flash-inline: $(TARGET-INLINE)
+flash-2: $(TARGET-2)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
-flash-link-ASM: $(TARGET-LINK-ASM)
+flash-3: $(TARGET-3)
+	openocd -f openocd.cfg -c "program $< verify reset exit"
+
+flash-4: $(TARGET-4)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
 clean:
