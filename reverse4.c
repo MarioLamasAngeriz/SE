@@ -9,7 +9,7 @@
 #include "includes/pin_mux.h"
 
 
-unsigned int reverse2_int(unsigned int n) { // Devolve o enteiro invertido bit a bit
+uint32_t reverse2_int(uint32_t n) { // Devolve o enteiro invertido bit a bit
 	// Paso 1: Invertir bits pares e impares
 	n = ((n & 0x55555555) << 1) | ((n >> 1) & 0x55555555);
 	

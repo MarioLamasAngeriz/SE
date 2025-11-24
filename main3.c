@@ -83,6 +83,5 @@ int main(void) {
 	PRINTF("Número invertido bit a bit: %u\r\n", reversed);
 	imprimir_en_binario(reversed);
 
-	PRINTF("Número de ciclos de CPU\r\n"
-			"para a execución de la función de inversion de bits = %u\r\n", ciclosCPU);
+	PRINTF("Número de ciclos de CPU para a execución de la función de inversion de bits = %u\r\n", ciclosCPU);
 }
