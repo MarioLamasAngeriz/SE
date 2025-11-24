@@ -87,8 +87,7 @@ Número a invertir bit a bit: 1234
 Número en binario: 0b00000000 00000000 00000100 11010010 
 Número invertido bit a bit: 1260388352
 Número en binario: 0b01001011 00100000 00000000 00000000 
-Número de ciclos de CPU
-para a execución de la función de inversion de bits = 120
+Número de ciclos de CPU para a execución de la función de inversion de bits = 120
 ```
 
 ---
@@ -102,6 +101,5 @@ Número a invertir bit a bit: 1234
 Número en binario: 0b00000000 00000000 00000100 11010010 
 Número invertido bit a bit: 1260388352
 Número en binario: 0b01001011 00100000 00000000 00000000 
-Número de ciclos de CPU
-para a execución de la función de inversion de bits = 8
+Número de ciclos de CPU para a execución de la función de inversion de bits = 8
 ```
