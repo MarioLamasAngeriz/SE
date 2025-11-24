@@ -38,16 +38,16 @@ $(TARGET-3): $(OBJECTS-3)
 $(TARGET-4): $(OBJECTS-4)
 	$(CC) $(LDFLAGS) -Wl,-Map,reverse4.map $^ -o $@
 
-flash-1: $(TARGET-1)
+flash1: $(TARGET-1)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
-flash-2: $(TARGET-2)
+flash2: $(TARGET-2)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
-flash-3: $(TARGET-3)
+flash3: $(TARGET-3)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
-flash-4: $(TARGET-4)
+flash4: $(TARGET-4)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
 clean:

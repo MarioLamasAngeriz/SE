@@ -76,7 +76,6 @@ int main(void) {
 	PRINTF("\r\nNúmero a invertir bit a bit: %u\r\n", num);
 	imprimir_en_binario(num);
 
-	///
 	tmp0_conf();
 	inicio = tmp0_get();
 	
@@ -84,13 +83,11 @@ int main(void) {
 	
 	fin = tmp0_get();
 		
-	if (fin > inicio) { //overflow?
+	if (fin < inicio) { //overflow?
         	ciclosCPU = (TPM_MAX_VALUE - inicio) + fin + 1;
     	} else {
-        	ciclosCPU = inicio - fin;
+        	ciclosCPU = fin - inicio;
     	}
-
-	///
 
 	PRINTF("Número invertido bit a bit: %u\r\n", reversed);
 	imprimir_en_binario(reversed);
