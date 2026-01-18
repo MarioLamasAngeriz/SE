@@ -2,11 +2,9 @@ Traballo tutelado 2. PWM + LED + Sensor
 
 Traballo individual
 
-Prazo: 12 de xaneiro, 2026
+Prazo: 19 de xaneiro, 2026
 
 Programade unha aplicación para a placa FRDM-KL46Z que faga uso de PWM para acender os LEDs con maior ou menor intensidade, en función do valor dun sensor da placa.
-
-Tedes dúas opcións de sensores a escoller:
 
     Magnetómetro + acelerómetro: Empregando eses dous sensores calcularemos a nosa orientación ao norte en graos:
         0° → Norte
