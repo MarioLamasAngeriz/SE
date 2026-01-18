@@ -32,13 +32,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "includes/fsl_debug_console.h"
-#include "board.h"
-#include "fsl_tpm.h"
+#define CPU_MKL46Z256VLL4 1
 
-#include "fsl_common.h"
-#include "pin_mux.h"
-#include "clock_config.h"
+#include "includes/fsl_debug_console.h"
+#include "includes/board.h"
+#include "includes/fsl_tpm.h"
+
+#include "includes/fsl_common.h"
+#include "includes/pin_mux.h"
+#include "includes/clock_config.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
