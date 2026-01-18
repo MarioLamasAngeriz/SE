@@ -1,109 +1,60 @@
 #define CPU_MKL46Z256VLL4 1
+#define BOARD_TPM_BASEADDR TPM0
+#define BOARD_FIRST_TPM_CHANNEL 2U
+#define BOARD_SECOND_TPM_CHANNEL 5U
+#define TPM_SOURCE_CLOCK CLOCK_GetFreq(kCLOCK_PllFllSelClk)
+
 #include "includes/fsl_debug_console.h"
 #include "includes/board.h"
 #include "includes/fsl_tpm.h"
-#include "includes/fsl_common.h"
 #include "includes/pin_mux.h"
 #include "includes/clock_config.h"
+#include "includes/lcd.h"
 
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
-/* The Flextimer instance/channel used for board */
-#define BOARD_TPM_BASEADDR TPM0
+void setup_pwm(void) {
 
-/* Interrupt to enable and flag to read; depends on the TPM channel used */
-#define TPM_CHANNEL_INTERRUPT_ENABLE kTPM_Chnl5InterruptEnable
+	tpm_config_t tpmInfo;
+	tpm_chnl_pwm_signal_param_t tpmParam[2];
 
-/* Interrupt number and interrupt handler for the TPM instance used */
-#define TPM_INTERRUPT_NUMBER TPM0_IRQn
-#define TPM_CHANNEL_FLAG kTPM_Chnl5Flag
-#define TPM_LED_HANDLER TPM0_IRQHandler
-
-/* Get source clock for TPM driver */
-#define TPM_SOURCE_CLOCK CLOCK_GetFreq(kCLOCK_PllFllSelClk)
-
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-/*!
- * @brief delay a while.
- */
-void delay(void);
-
-/*******************************************************************************
- * Variables
- ******************************************************************************/
-volatile bool brightnessUp = true; /* Indicate LED is brighter or dimmer */
-volatile uint8_t updatedDutycycle = 10U;
-volatile uint8_t getCharValue = 0U;
-
-/*******************************************************************************
- * Code
- ******************************************************************************/
-/*!
- * @brief Main function
- */
-int main(void)
-{
-    tpm_config_t tpmInfo;
-    tpm_chnl_pwm_signal_param_t tpmParam;
-
-#ifndef TPM_LED_ON_LEVEL  
-  #define TPM_LED_ON_LEVEL kTPM_LowTrue
-#endif
+	#ifndef TPM_LED_ON_LEVEL  
+		#define TPM_LED_ON_LEVEL kTPM_LowTrue 
+	#endif    
     
-    /* Configure tpm params with frequency 24kHZ */
-    tpmParam.chnlNumber = (tpm_chnl_t)BOARD_TPM_CHANNEL;
-    tpmParam.level = TPM_LED_ON_LEVEL;
-    tpmParam.dutyCyclePercent = updatedDutycycle;
+	tpmParam[0].chnlNumber = (tpm_chnl_t)BOARD_FIRST_TPM_CHANNEL;	
+	tpmParam[0].level = TPM_LED_ON_LEVEL;
+	tpmParam[0].dutyCyclePercent = 0U;
 
-    /* Board pin, clock, debug console init */
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
-    /* Select the clock source for the TPM counter as kCLOCK_PllFllSelClk */
-    CLOCK_SetTpmClock(1U);
+	tpmParam[1].chnlNumber = (tpm_chnl_t)BOARD_SECOND_TPM_CHANNEL;
+	tpmParam[1].level = TPM_LED_ON_LEVEL;
+	tpmParam[1].dutyCyclePercent = 0U;
 
-    /* Print a note to terminal */
-    PRINTF("\r\nTPM example to output center-aligned PWM signal\r\n");
-    PRINTF("\r\nIf an LED is connected to the TPM pin, you will see a change in LED brightness if you enter different values");
-    PRINTF("\r\nIf no LED is connected to the TPM pin, then probe the signal using an oscilloscope");
+    	BOARD_InitPins();
+	BOARD_BootClockRUN();
+	BOARD_InitDebugConsole();
+    	CLOCK_SetTpmClock(1U);
 
-    TPM_GetDefaultConfig(&tpmInfo);
-    /* Initialize TPM module */
-    TPM_Init(BOARD_TPM_BASEADDR, &tpmInfo);
+    	TPM_GetDefaultConfig(&tpmInfo);
+    	TPM_Init(BOARD_TPM_BASEADDR, &tpmInfo);
 
-    TPM_SetupPwm(BOARD_TPM_BASEADDR, &tpmParam, 1U, kTPM_CenterAlignedPwm, 24000U, TPM_SOURCE_CLOCK);
+    	TPM_SetupPwm(BOARD_TPM_BASEADDR, tpmParam, 2U, kTPM_EdgeAlignedPwm, 24000U, TPM_SOURCE_CLOCK);
+    	TPM_StartTimer(BOARD_TPM_BASEADDR, kTPM_SystemClock);
 
-    TPM_StartTimer(BOARD_TPM_BASEADDR, kTPM_SystemClock);
-
-    while (1)
-    {
-        do
-        {
-            PRINTF("\r\nPlease enter a value to update the Duty cycle:\r\n");
-            PRINTF("Note: The range of value is 0 to 9.\r\n");
-            PRINTF("For example: If enter '5', the duty cycle will be set to 50 percent.\r\n");
-            PRINTF("Value:");
-            getCharValue = GETCHAR() - 0x30U;
-            PRINTF("%d", getCharValue);
-            PRINTF("\r\n");
-        } while (getCharValue > 9U);
-
-        updatedDutycycle = getCharValue * 10U;
-
-        /* Disable channel output before updating the dutycycle */
-        TPM_UpdateChnlEdgeLevelSelect(BOARD_TPM_BASEADDR, (tpm_chnl_t)BOARD_TPM_CHANNEL, 0U);
-
-        /* Update PWM duty cycle */
-        TPM_UpdatePwmDutycycle(BOARD_TPM_BASEADDR, (tpm_chnl_t)BOARD_TPM_CHANNEL, kTPM_CenterAlignedPwm,
-                               updatedDutycycle);
-
-        /* Start channel output with updated dutycycle */
-        TPM_UpdateChnlEdgeLevelSelect(BOARD_TPM_BASEADDR, (tpm_chnl_t)BOARD_TPM_CHANNEL, TPM_LED_ON_LEVEL);
-
-        PRINTF("The duty cycle was successfully updated!\r\n");
-    }
+	//TPM_UpdatePwmDutycycle(BOARD_TPM_BASEADDR, (tpm_chnl_t)BOARD_FIRST_TPM_CHANNEL, kTPM_EdgeAlignedPwm, 1U);		// rojo, valores de 0 a 90 unsigned
+	//TPM_UpdatePwmDutycycle(BOARD_TPM_BASEADDR, (tpm_chnl_t)BOARD_SECOND_TPM_CHANNEL, kTPM_EdgeAlignedPwm, 1U); 		// verde, valores de 0 a 90 unsigned
+	
 }
 
+int main(void) {
+
+	lcd_ini();
+	setup_pwm();
+	
+	lcd_set(0, 1);
+	lcd_set(1, 2);
+	lcd_set(2, 3);
+	lcd_set(3, 4);
+
+	while (1) {
+
+	}
+}
