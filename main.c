@@ -277,8 +277,9 @@ void get_magnet_data(void) {
 
 void get_tilt_compensated_headign(void) {
 
-	float offsetX = (2991.0 + 2023.0) / 2.0;
-	float offsetY = (2176.0 + 1172.0) / 2.0;
+	float offsetX = 2507.0f;
+	float offsetY = 1674.0f;
+	float offsetZ = 2800.0f;
 
 	float accX = (float)xData;
 	float accY = (float)yData;
@@ -289,7 +290,7 @@ void get_tilt_compensated_headign(void) {
 
 	float magX = (float)xMagData - offsetX;
 	float magY = (float)yMagData - offsetY;
-	float magZ = (float)zMagData - 2600.0f;
+	float magZ = (float)zMagData - offsetZ;
 
 	float xh = magX * cos(pitch) + magZ * sin(pitch);
 	float yh = magX * sin(roll) * sin(pitch) + magY * cos(roll) - magZ * sin(roll) * cos(pitch);
@@ -335,7 +336,7 @@ int main(void) {
 
 		update_lcd();
 		leds_orientados(headingDegrees);
-		//for (volatile int i = 0; i < 5000000; i++);
+		for (volatile int i = 0; i < 500000; i++);
 	}
 }
 
