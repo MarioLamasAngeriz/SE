@@ -1,4 +1,5 @@
 // accel
+#include <sys/types.h>
 #define BOARD_TIMER_BASEADDR TPM0
 #define BOARD_FIRST_TIMER_CHANNEL 5U
 #define BOARD_SECOND_TIMER_CHANNEL 2U
@@ -39,14 +40,16 @@
 #define BOARD_SECOND_TPM_CHANNEL 5U
 #define TPM_SOURCE_CLOCK CLOCK_GetFreq(kCLOCK_PllFllSelClk)
 
-#include "includes/MKL46Z4.h"
 #include "drivers/fsl_debug_console.h"
 #include "includes/clock_config.h"
 #include "drivers/fsl_common.h"
 #include "drivers/fsl_gpio.h"
 #include "drivers/fsl_port.h"
 #include "includes/pin_mux.h"
+#include "includes/MKL46Z4.h"
 #include "includes/board.h"
+#include <stdint.h>
+#include <stdio.h>
 #include <math.h>
 
 // accel
@@ -57,9 +60,6 @@
 
 // lcd
 #include "includes/lcd.h"
-
-
-/************************************************accel*************************************************/ 
 
 mma_handle_t mmaHandle = {0};
 
@@ -74,6 +74,12 @@ volatile int16_t yAngle = 0;
 volatile int16_t zAngle = 0;
 
 const uint8_t g_accel_address[] = {0x1CU, 0x1DU, 0x1EU, 0x1FU};
+
+volatile int16_t xMagData = 0;
+volatile int16_t yMagData = 0;
+volatile int16_t zMagData = 0;
+
+volatile int16_t headingDegrees = 0;
 
 static void i2c_release_bus_delay(void) {
 	uint32_t i = 0;
@@ -196,13 +202,8 @@ void get_accel_data(void) {
 	if (zAngle < 0) zAngle *= -1;
 
 	/* Print out the angle data. */ 
-	PRINTF("x= %2d y = %2d z= %2d\r\n", xAngle, yAngle, zAngle);
+	PRINTF("ACC -> X = %2d Y = %2d Z = %2d\r\n", xAngle, yAngle, zAngle);
 }
-
-
-/************************************************accel*************************************************/
-
-/*************************************************pwm**************************************************/
 
 void setup_pwm(void) {
 
@@ -232,20 +233,14 @@ void change_leds(uint8_t rojo, uint8_t verde) {
 	TPM_UpdatePwmDutycycle(BOARD_TPM_BASEADDR, (tpm_chnl_t)BOARD_SECOND_TPM_CHANNEL, kTPM_EdgeAlignedPwm, verde); 		// verde, valores de 0 a 100 unsigned
 }
 
-/*************************************************pwm**************************************************/
-
-/*************************************************lcd**************************************************/
-
 void update_lcd(void) {
 
-	lcd_set(0, 1);
-	lcd_set(1, 2);
-	lcd_set(2, 3);
-	lcd_set(3, 4);
+	lcd_set((headingDegrees / 1000) % 10, 1);
+	lcd_set((headingDegrees / 100) % 10, 2);
+	lcd_set((headingDegrees / 10) % 10, 3);
+	lcd_set(headingDegrees % 10, 4);
 
 }
-
-/*************************************************lcd**************************************************/
 
 void setup_magnet(void) {
 	uint8_t who_am_i = 0;
@@ -265,11 +260,6 @@ void setup_magnet(void) {
 	BOARD_Accel_I2C_Send(MAG3110_I2C_ADDRESS, MAG3110_CTRL_REG1, 1, reg_val);
 }
 
-
-volatile int16_t xMagData = 0;
-volatile int16_t yMagData = 0;
-volatile int16_t zMagData = 0;
-
 void get_magnet_data(void) {
 	uint8_t raw_data[6];
     
@@ -278,10 +268,50 @@ void get_magnet_data(void) {
 		xMagData = (int16_t)((raw_data[0] << 8) | raw_data[1]);
 		yMagData = (int16_t)((raw_data[2] << 8) | raw_data[3]);
 		zMagData = (int16_t)((raw_data[4] << 8) | raw_data[5]);
-		PRINTF("MAG -> X:%d Y:%d Z:%d\r\n", xMagData, yMagData, zMagData);
+		PRINTF("MAG -> X = %d Y = %d Z = %d\r\n", xMagData, yMagData, zMagData);
+
 	} else {
 		PRINTF("Error al leer datos del Magnetómetro\r\n");
 	}
+}
+
+void get_tilt_compensated_headign(void) {
+
+	float offsetX = (2991.0 + 2023.0) / 2.0;
+	float offsetY = (2176.0 + 1172.0) / 2.0;
+
+	float accX = (float)xData;
+	float accY = (float)yData;
+	float accZ = (float)zData;
+
+	float roll = atan2(accY, accZ);
+	float pitch = atan2(-accX, sqrt(accY * accY + accZ * accZ));
+
+	float magX = (float)xMagData - offsetX;
+	float magY = (float)yMagData - offsetY;
+	float magZ = (float)zMagData - 2600.0f;
+
+	float xh = magX * cos(pitch) + magZ * sin(pitch);
+	float yh = magX * sin(roll) * sin(pitch) + magY * cos(roll) - magZ * sin(roll) * cos(pitch);
+
+	float degrees = atan2(yh, xh) * (180.0 / M_PI);
+
+	if (degrees < 0) 
+		degrees += 360.0;
+
+	headingDegrees = (int16_t)degrees;
+}
+
+void leds_orientados(int16_t grados) {
+	uint8_t intensidadRojo = 0;
+	uint8_t intensidadVerde = 0;
+
+	float distanciaAlSur = fabs((float)grados - 180.0f);
+	
+	intensidadVerde = (uint8_t)((distanciaAlSur / 180.0f) * 100.0f);
+	intensidadRojo = 100 - intensidadVerde;
+	
+	change_leds(intensidadRojo, intensidadVerde);
 }
 
 int main(void) {
@@ -297,13 +327,15 @@ int main(void) {
 	setup_accel();
 	setup_magnet();
 
-	get_magnet_data();
-	get_accel_data();
-	update_lcd();
-	change_leds(100, 0);
-
 	while (1) {
+		get_accel_data();
+		get_magnet_data();
 
+		get_tilt_compensated_headign();
+
+		update_lcd();
+		leds_orientados(headingDegrees);
+		//for (volatile int i = 0; i < 5000000; i++);
 	}
 }
 
