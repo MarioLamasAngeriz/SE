@@ -1,5 +1,4 @@
-#define CPU_MKL46Z256VLL4 1
-
+// accel
 #define BOARD_TIMER_BASEADDR TPM0
 #define BOARD_FIRST_TIMER_CHANNEL 5U
 #define BOARD_SECOND_TIMER_CHANNEL 2U
@@ -16,6 +15,23 @@
 #define I2C_RELEASE_SCL_GPIO GPIOE
 #define I2C_RELEASE_SCL_PIN 24U
 #define I2C_RELEASE_BUS_COUNT 100U
+
+// magnet
+#define MAG3110_I2C_ADDRESS 0x0E
+#define MAG3110_WHO_AM_I 0x07  
+#define MAG3110_WHO_AM_I_VALUE 0xC4   
+
+#define MAG3110_CTRL_REG1 0x10
+#define MAG3110_CTRL_REG2 0x11
+
+#define MAG3110_OUT_X_MSB 0x01   
+#define MAG3110_OUT_X_LSB 0x02   
+#define MAG3110_OUT_Y_MSB 0x03 
+#define MAG3110_OUT_Y_LSB 0x04   
+#define MAG3110_OUT_Z_MSB 0x05   
+#define MAG3110_OUT_Z_LSB 0x06  
+
+#define MAG3110_DR_STATUS 0x00 
 
 // pwm
 #define BOARD_TPM_BASEADDR TPM0
@@ -231,6 +247,43 @@ void update_lcd(void) {
 
 /*************************************************lcd**************************************************/
 
+void setup_magnet(void) {
+	uint8_t who_am_i = 0;
+	uint8_t reg_val = 0;
+
+	BOARD_Accel_I2C_Receive(MAG3110_I2C_ADDRESS, MAG3110_WHO_AM_I, 1, &who_am_i, 1);
+    
+	if (who_am_i != 0xC4) {
+		PRINTF("Error: Magnetómetro no encontrado (ID: 0x%02X)\r\n", who_am_i);
+		return;
+	}
+
+	reg_val = 0x80; 
+	BOARD_Accel_I2C_Send(MAG3110_I2C_ADDRESS, MAG3110_CTRL_REG2, 1, reg_val);
+
+	reg_val = 0x19;
+	BOARD_Accel_I2C_Send(MAG3110_I2C_ADDRESS, MAG3110_CTRL_REG1, 1, reg_val);
+}
+
+
+volatile int16_t xMagData = 0;
+volatile int16_t yMagData = 0;
+volatile int16_t zMagData = 0;
+
+void get_magnet_data(void) {
+	uint8_t raw_data[6];
+    
+	if (BOARD_Accel_I2C_Receive(MAG3110_I2C_ADDRESS, MAG3110_OUT_X_MSB, 1, raw_data, 6) == kStatus_Success) {
+        
+		xMagData = (int16_t)((raw_data[0] << 8) | raw_data[1]);
+		yMagData = (int16_t)((raw_data[2] << 8) | raw_data[3]);
+		zMagData = (int16_t)((raw_data[4] << 8) | raw_data[5]);
+		PRINTF("MAG -> X:%d Y:%d Z:%d\r\n", xMagData, yMagData, zMagData);
+	} else {
+		PRINTF("Error al leer datos del Magnetómetro\r\n");
+	}
+}
+
 int main(void) {
 
     	BOARD_InitPins();
@@ -242,7 +295,9 @@ int main(void) {
 	lcd_ini();
 	setup_pwm();
 	setup_accel();
+	setup_magnet();
 
+	get_magnet_data();
 	get_accel_data();
 	update_lcd();
 	change_leds(100, 0);
