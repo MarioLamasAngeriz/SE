@@ -81,16 +81,16 @@ void BOARD_InitPins(void)
     CLOCK_EnableClock(kCLOCK_PortE);
 
     /* PORTA1 (pin 35) is configured as UART0_RX */
-    PORT_SetPinMux(PORTA, 1U, kPORT_MuxAlt2);
+    PORT_SetPinMux(BOARD_DEBUG_UART_RX_PORT, BOARD_DEBUG_UART_RX_PIN, kPORT_MuxAlt2);
 
     /* PORTA2 (pin 36) is configured as UART0_TX */
-    PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
+    PORT_SetPinMux(BOARD_DEBUG_UART_TX_PORT, BOARD_DEBUG_UART_TX_PIN, kPORT_MuxAlt2);
 
     /* PORTD5 (pin 98) is configured as TPM0_CH5 */
-    PORT_SetPinMux(PORTD, 5U, kPORT_MuxAlt4);
+    PORT_SetPinMux(BOARD_LED_GREEN_PORT, BOARD_LED_GREEN_PIN, kPORT_MuxAlt4);
 
     /* PORTE29 (pin 26) is configured as TPM0_CH2 */
-    PORT_SetPinMux(PORTE, 29U, kPORT_MuxAlt3);
+    PORT_SetPinMux(BOARD_LED_RED_PORT, BOARD_LED_RED_PIN, kPORT_MuxAlt3);
 
     SIM->SOPT5 = ((SIM->SOPT5 &
                    /* Mask bits to zero which are setting */

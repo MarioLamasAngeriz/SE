@@ -1,8 +1,4 @@
-#include <stdint.h>
 #define CPU_MKL46Z256VLL4 1
-
-// accel
-#define SDK_I2C_BASED_COMPONENT_USED 1
 
 #define BOARD_TIMER_BASEADDR TPM0
 #define BOARD_FIRST_TIMER_CHANNEL 5U
@@ -120,6 +116,64 @@ void BOARD_I2C_ReleaseBus(void) {
 }
 
 void setup_accel(void) {
+    mma_config_t config = {0}; 
+    status_t result; 
+    uint8_t array_addr_size = 0;
+    uint8_t sensorRange = 0;
+    uint8_t i = 0;
+
+    PRINTF("\r\n=== Iniciando configuracion I2C ===\r\n");
+    
+    BOARD_Accel_I2C_Init();
+    PRINTF("BOARD_Accel_I2C_Init() completado\r\n");
+    
+    config.I2C_SendFunc = BOARD_Accel_I2C_Send;
+    config.I2C_ReceiveFunc = BOARD_Accel_I2C_Receive;
+
+    array_addr_size = sizeof(g_accel_address) / sizeof(g_accel_address[0]);
+    PRINTF("Probando %d direcciones I2C...\r\n", array_addr_size);
+    
+    for (i = 0; i < array_addr_size; i++) {
+        config.slaveAddress = g_accel_address[i];
+        PRINTF("Intentando direccion 0x%02X... ", g_accel_address[i]);
+        
+        result = MMA_Init(&mmaHandle, &config);
+        
+        if (result == kStatus_Success) {
+            PRINTF("OK!\r\n");
+            break;
+        } else {
+            PRINTF("FALLO (codigo: %d)\r\n", result);
+        }
+    }
+
+    if (result != kStatus_Success) {
+        PRINTF("\r\n!!! NO SE ENCONTRO ACELEROMETRO !!!\r\n");
+        return;
+    }
+    
+    PRINTF("Acelerometro encontrado en 0x%02X\r\n", g_accel_address[i]);
+    PRINTF("Leyendo registro de rango...\r\n");
+    
+    if (MMA_ReadReg(&mmaHandle, kMMA8451_XYZ_DATA_CFG, &sensorRange) != kStatus_Success) {
+        PRINTF("FALLO leyendo rango\r\n");
+        return;
+    }
+    
+    PRINTF("Rango leido: 0x%02X\r\n", sensorRange);
+    
+    if (sensorRange == 0x00) {
+        dataScale = 2U;
+    } else if (sensorRange == 0x01) {
+        dataScale = 4U;
+    } else if (sensorRange == 0x10) {
+        dataScale = 8U;
+    }
+    
+    PRINTF("=== Acelerometro configurado correctamente ===\r\n");
+}
+
+void setup_accel2(void) {
 
 	mma_config_t config = {0}; 
 	status_t result; 
@@ -127,11 +181,8 @@ void setup_accel(void) {
     	uint8_t array_addr_size = 0;
 	uint8_t sensorRange = 0;
    	uint8_t i = 0;
-
-    	BOARD_I2C_ReleaseBus();
-    	BOARD_I2C_ConfigurePins();
-
-    	BOARD_Accel_I2C_Init();
+ 
+	BOARD_Accel_I2C_Init();
     	config.I2C_SendFunc = BOARD_Accel_I2C_Send;
     	config.I2C_ReceiveFunc = BOARD_Accel_I2C_Receive;
 
@@ -242,14 +293,16 @@ int main(void) {
 
     	BOARD_InitPins();
 	BOARD_BootClockRUN();
+	BOARD_I2C_ReleaseBus();
+	BOARD_I2C_ConfigurePins();
 	BOARD_InitDebugConsole();
 	
-	setup_pwm();
+	//lcd_ini();
+	//setup_pwm();
 	setup_accel();
-	lcd_ini();
 
 	get_accel_data();
-	update_lcd();
+	//update_lcd();
 
 	while (1) {
 
