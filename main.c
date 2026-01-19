@@ -1,5 +1,4 @@
 // accel
-#include <sys/types.h>
 #define BOARD_TIMER_BASEADDR TPM0
 #define BOARD_FIRST_TIMER_CHANNEL 5U
 #define BOARD_SECOND_TIMER_CHANNEL 2U
@@ -73,13 +72,21 @@ volatile int16_t xAngle = 0;
 volatile int16_t yAngle = 0;
 volatile int16_t zAngle = 0;
 
-const uint8_t g_accel_address[] = {0x1CU, 0x1DU, 0x1EU, 0x1FU};
+volatile const uint8_t g_accel_address[] = {0x1CU, 0x1DU, 0x1EU, 0x1FU};
 
 volatile int16_t xMagData = 0;
 volatile int16_t yMagData = 0;
 volatile int16_t zMagData = 0;
 
 volatile int16_t headingDegrees = 0;
+
+volatile int16_t minX = 32767, maxX = -32768;
+volatile int16_t minY = 32767, maxY = -32768;
+volatile int16_t minZ = 32767, maxZ = -32768;
+
+volatile float offsetX;
+volatile float offsetY;
+volatile float offsetZ;
 
 static void i2c_release_bus_delay(void) {
 	uint32_t i = 0;
@@ -187,22 +194,10 @@ void get_accel_data(void) {
 		return;
 	}
 
-	/* Get the X and Y data from the sensor data structure in 14 bit left format data*/ 
 	xData = (int16_t)((uint16_t)((uint16_t)sensorData.accelXMSB << 8) | (uint16_t)sensorData.accelXLSB) / 4U;
 	yData = (int16_t)((uint16_t)((uint16_t)sensorData.accelYMSB << 8) | (uint16_t)sensorData.accelYLSB) / 4U;
 	zData = (int16_t)((uint16_t)((uint16_t)sensorData.accelZMSB << 8) | (uint16_t)sensorData.accelZLSB) / 4U;
 
-	/* Convert raw data to angle (normalize to 0-90 degrees). No negative angles. */
-	xAngle = (int16_t)floor((double)xData * (double)dataScale * 90 / 8192);
-	yAngle = (int16_t)floor((double)yData * (double)dataScale * 90 / 8192);
-	zAngle = (int16_t)floor((double)zData * (double)dataScale * 90 / 8192);
-
-	if (xAngle < 0) xAngle *= -1;
-	if (yAngle < 0) yAngle *= -1;
-	if (zAngle < 0) zAngle *= -1;
-
-	/* Print out the angle data. */ 
-	PRINTF("ACC -> X = %2d Y = %2d Z = %2d\r\n", xAngle, yAngle, zAngle);
 }
 
 void setup_pwm(void) {
@@ -268,7 +263,6 @@ void get_magnet_data(void) {
 		xMagData = (int16_t)((raw_data[0] << 8) | raw_data[1]);
 		yMagData = (int16_t)((raw_data[2] << 8) | raw_data[3]);
 		zMagData = (int16_t)((raw_data[4] << 8) | raw_data[5]);
-		PRINTF("MAG -> X = %d Y = %d Z = %d\r\n", xMagData, yMagData, zMagData);
 
 	} else {
 		PRINTF("Error al leer datos del Magnetómetro\r\n");
@@ -277,13 +271,9 @@ void get_magnet_data(void) {
 
 void get_tilt_compensated_headign(void) {
 
-	float offsetX = 2507.0f;
-	float offsetY = 1674.0f;
-	float offsetZ = 2800.0f;
-
-	float accX = (float)xData;
-	float accY = (float)yData;
-	float accZ = (float)zData;
+	float accX = (float)xData * (float)dataScale / 4096.0f;
+	float accY = (float)yData * (float)dataScale / 4096.0f;
+	float accZ = (float)zData *  (float)dataScale / 4096.0f;
 
 	float roll = atan2(accY, accZ);
 	float pitch = atan2(-accX, sqrt(accY * accY + accZ * accZ));
@@ -315,6 +305,36 @@ void leds_orientados(int16_t grados) {
 	change_leds(intensidadRojo, intensidadVerde);
 }
 
+void calibrate_magnetometer(void) {
+       
+    for(int i = 0; i < 300; i++) {
+        get_magnet_data();
+        
+        if(xMagData < minX) minX = xMagData;
+        if(xMagData > maxX) maxX = xMagData;
+        if(yMagData < minY) minY = yMagData;
+        if(yMagData > maxY) maxY = yMagData;
+        if(zMagData < minZ) minZ = zMagData;
+        if(zMagData > maxZ) maxZ = zMagData;
+
+        if(i % 50 == 0) {
+            PRINTF("Progreso: %d/300\r\n", i);
+            PRINTF("  X: [%d, %d] Y: [%d, %d] Z: [%d, %d]\r\n", minX, maxX, minY, maxY, minZ, maxZ);
+        }
+        
+        for(volatile int j = 0; j < 200000; j++);
+    }
+    
+    offsetX = (minX + maxX) / 2.0f;
+    offsetY = (minY + maxY) / 2.0f;
+    offsetZ = (minZ + maxZ) / 2.0f;
+
+    PRINTF("Calibración completa:\r\n");
+    PRINTF("offsetX = %d (min: %d, max: %d)\r\n", (int)offsetX, minX, maxX);
+    PRINTF("offsetY = %d (min: %d, max: %d)\r\n", (int)offsetY, minY, maxY);
+    PRINTF("offsetZ = %d (min: %d, max: %d)\r\n", (int)offsetZ, minZ, maxZ);
+}
+
 int main(void) {
 
     	BOARD_InitPins();
@@ -327,6 +347,12 @@ int main(void) {
 	setup_pwm();
 	setup_accel();
 	setup_magnet();
+
+	PRINTF("\r\nLa calibración comenzará en unos 5 segundos...\r\n");
+	PRINTF("Comienza a girar el dispositivo en todas direcciones (en forma de 8) hasta que el proceso de calibración termine\r\n");
+	for(volatile int i = 0; i < 30000000; i++);
+
+	calibrate_magnetometer();
 
 	while (1) {
 		get_accel_data();
