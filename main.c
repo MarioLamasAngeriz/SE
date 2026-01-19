@@ -23,21 +23,21 @@
 #define BOARD_SECOND_TPM_CHANNEL 5U
 #define TPM_SOURCE_CLOCK CLOCK_GetFreq(kCLOCK_PllFllSelClk)
 
-#include "includes/fsl_debug_console.h"
-#include "includes/clock_config.h"
-#include "includes/fsl_common.h"
-#include "includes/fsl_gpio.h"
-#include "includes/fsl_port.h"
 #include "includes/MKL46Z4.h"
+#include "drivers/fsl_debug_console.h"
+#include "includes/clock_config.h"
+#include "drivers/fsl_common.h"
+#include "drivers/fsl_gpio.h"
+#include "drivers/fsl_port.h"
 #include "includes/pin_mux.h"
 #include "includes/board.h"
 #include <math.h>
 
 // accel
-#include "includes/fsl_mma.h"
+#include "drivers/fsl_mma.h"
 
 // pwm
-#include "includes/fsl_tpm.h"
+#include "drivers/fsl_tpm.h"
 
 // lcd
 #include "includes/lcd.h"
@@ -116,64 +116,6 @@ void BOARD_I2C_ReleaseBus(void) {
 }
 
 void setup_accel(void) {
-    mma_config_t config = {0}; 
-    status_t result; 
-    uint8_t array_addr_size = 0;
-    uint8_t sensorRange = 0;
-    uint8_t i = 0;
-
-    PRINTF("\r\n=== Iniciando configuracion I2C ===\r\n");
-    
-    BOARD_Accel_I2C_Init();
-    PRINTF("BOARD_Accel_I2C_Init() completado\r\n");
-    
-    config.I2C_SendFunc = BOARD_Accel_I2C_Send;
-    config.I2C_ReceiveFunc = BOARD_Accel_I2C_Receive;
-
-    array_addr_size = sizeof(g_accel_address) / sizeof(g_accel_address[0]);
-    PRINTF("Probando %d direcciones I2C...\r\n", array_addr_size);
-    
-    for (i = 0; i < array_addr_size; i++) {
-        config.slaveAddress = g_accel_address[i];
-        PRINTF("Intentando direccion 0x%02X... ", g_accel_address[i]);
-        
-        result = MMA_Init(&mmaHandle, &config);
-        
-        if (result == kStatus_Success) {
-            PRINTF("OK!\r\n");
-            break;
-        } else {
-            PRINTF("FALLO (codigo: %d)\r\n", result);
-        }
-    }
-
-    if (result != kStatus_Success) {
-        PRINTF("\r\n!!! NO SE ENCONTRO ACELEROMETRO !!!\r\n");
-        return;
-    }
-    
-    PRINTF("Acelerometro encontrado en 0x%02X\r\n", g_accel_address[i]);
-    PRINTF("Leyendo registro de rango...\r\n");
-    
-    if (MMA_ReadReg(&mmaHandle, kMMA8451_XYZ_DATA_CFG, &sensorRange) != kStatus_Success) {
-        PRINTF("FALLO leyendo rango\r\n");
-        return;
-    }
-    
-    PRINTF("Rango leido: 0x%02X\r\n", sensorRange);
-    
-    if (sensorRange == 0x00) {
-        dataScale = 2U;
-    } else if (sensorRange == 0x01) {
-        dataScale = 4U;
-    } else if (sensorRange == 0x10) {
-        dataScale = 8U;
-    }
-    
-    PRINTF("=== Acelerometro configurado correctamente ===\r\n");
-}
-
-void setup_accel2(void) {
 
 	mma_config_t config = {0}; 
 	status_t result; 
@@ -297,12 +239,13 @@ int main(void) {
 	BOARD_I2C_ConfigurePins();
 	BOARD_InitDebugConsole();
 	
-	//lcd_ini();
-	//setup_pwm();
+	lcd_ini();
+	setup_pwm();
 	setup_accel();
 
 	get_accel_data();
-	//update_lcd();
+	update_lcd();
+	change_leds(100, 0);
 
 	while (1) {
 

@@ -70,6 +70,10 @@ status_t MMA_Init(mma_handle_t *handle, mma_config_t *config)
     {
         return kStatus_Fail;
     }
+
+	volatile int i;
+	for (i = 0; i < 1000; i++);
+
     /* Put the mma8451 into standby mode */
     if(MMA_ReadReg(handle, kMMA8451_CTRL_REG1, &val) != kStatus_Success)
     {

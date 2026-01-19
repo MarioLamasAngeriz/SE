@@ -63,6 +63,7 @@ extern "C" {
 
 #define SOPT5_UART0RXSRC_UART_RX 0x00u /*!<@brief UART0 Receive Data Source Select: UART_RX pin */
 #define SOPT5_UART0TXSRC_UART_TX 0x00u /*!<@brief UART0 Transmit Data Source Select: UART0_TX pin */
+
 /*! @name PORTA1 (number 35), J1[2]/D0/UART1_RX_TGTMCU
   @{ */
 #define BOARD_DEBUG_UART_RX_PERIPHERAL UART0                 /*!<@brief Device name: UART0 */

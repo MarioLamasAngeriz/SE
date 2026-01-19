@@ -1,9 +1,9 @@
 CC=arm-none-eabi-gcc
-CFLAGS=-I ./includes -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4
+CFLAGS=-I ./includes -I ./drivers -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MKL46Z256VLL4 -DSDK_I2C_BASED_COMPONENT_USED=1
 LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
 
 TARGET=main.elf
-OBJECTS=main.o startup.o ./includes/board.o ./includes/clock_config.o ./includes/fsl_assert.o ./includes/fsl_clock.o ./includes/fsl_common.o ./includes/fsl_debug_console.o ./includes/fsl_gpio.o ./includes/fsl_log.o ./includes/fsl_smc.o ./includes/fsl_str.o ./includes/fsl_tpm.o ./includes/pin_mux.o ./includes/fsl_io.o ./includes/fsl_ftfx_cache.o ./includes/fsl_ftfx_controller.o ./includes/fsl_uart.o ./includes/fsl_lpsci.o ./includes/system_MKL46Z4.o ./includes/lcd.o ./includes/fsl_mma.o ./includes/fsl_i2c.o
+OBJECTS=main.o startup.o drivers/fsl_gpio.o drivers/fsl_tsi_v4.o drivers/fsl_clock.o drivers/fsl_common.o includes/board.o includes/pin_mux.o includes/clock_config.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_smc.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o drivers/fsl_assert.o drivers/fsl_mma.o drivers/fsl_i2c.o drivers/fsl_tpm.o ./includes/lcd.o
 
 all: $(TARGET)
 
@@ -14,8 +14,8 @@ flash: $(TARGET)
 	openocd -f openocd.cfg -c "program $< verify reset exit"
 
 clean:
-	$(RM) *.o *.map includes/*.o
+	$(RM) *.o *.map includes/*.o drivers/*.o
 
 cleanall:
-	$(RM) *.o *.elf *.map includes/*.o
+	$(RM) *.o *.elf *.map includes/*.o drivers/*.o
 
