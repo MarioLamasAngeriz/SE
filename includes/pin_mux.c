@@ -102,6 +102,55 @@ void BOARD_InitPins(void)
                   /* UART0 Receive Data Source Select: UART_RX pin. */
                   | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
 }
+
+/* clang-format off */
+/*
+ * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+BOARD_I2C_ConfigurePins:
+- options: {coreID: core0, enableClock: 'true'}
+- pin_list:
+  - {pin_num: '31', peripheral: I2C0, signal: SCL, pin_signal: PTE24/TPM0_CH0/I2C0_SCL, slew_rate: fast, pull_select: up, pull_enable: enable}
+  - {pin_num: '32', peripheral: I2C0, signal: SDA, pin_signal: PTE25/TPM0_CH1/I2C0_SDA, slew_rate: fast, pull_select: up, pull_enable: enable}
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
+ */
+/* clang-format on */
+
+/* FUNCTION ************************************************************************************************************
+ *
+ * Function Name : BOARD_I2C_ConfigurePins
+ *
+ * END ****************************************************************************************************************/
+void BOARD_I2C_ConfigurePins(void)
+{
+    /* Port E Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortE);
+
+    const port_pin_config_t porte24_pin31_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Pin is configured as I2C0_SCL */
+                                                    kPORT_MuxAlt5};
+    /* PORTE24 (pin 31) is configured as I2C0_SCL */
+    PORT_SetPinConfig(PORTE, 24U, &porte24_pin31_config);
+
+    const port_pin_config_t porte25_pin32_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Pin is configured as I2C0_SDA */
+                                                    kPORT_MuxAlt5};
+    /* PORTE25 (pin 32) is configured as I2C0_SDA */
+    PORT_SetPinConfig(PORTE, 25U, &porte25_pin32_config);
+}
 /***********************************************************************************************************************
  * EOF
  **********************************************************************************************************************/
