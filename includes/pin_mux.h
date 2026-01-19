@@ -64,62 +64,11 @@ extern "C" {
 #define SOPT5_UART0RXSRC_UART_RX 0x00u /*!<@brief UART0 Receive Data Source Select: UART_RX pin */
 #define SOPT5_UART0TXSRC_UART_TX 0x00u /*!<@brief UART0 Transmit Data Source Select: UART0_TX pin */
 
-/*! @name PORTA1 (number 35), J1[2]/D0/UART1_RX_TGTMCU
-  @{ */
-#define BOARD_DEBUG_UART_RX_PERIPHERAL UART0                 /*!<@brief Device name: UART0 */
-#define BOARD_DEBUG_UART_RX_SIGNAL RX                        /*!<@brief UART0 signal: RX */
-#define BOARD_DEBUG_UART_RX_PORT PORTA                       /*!<@brief PORT device name: PORTA */
-#define BOARD_DEBUG_UART_RX_PIN 1U                           /*!<@brief PORTA pin index: 1 */
-#define BOARD_DEBUG_UART_RX_PIN_NAME UART0_RX                /*!<@brief Pin name */
-#define BOARD_DEBUG_UART_RX_LABEL "J1[2]/D0/UART1_RX_TGTMCU" /*!<@brief Label */
-#define BOARD_DEBUG_UART_RX_NAME "DEBUG_UART_RX"             /*!<@brief Identifier name */
-                                                             /* @} */
-
-/*! @name PORTA2 (number 36), J1[4]/D1/UART1_TX_TGTMCU
-  @{ */
-#define BOARD_DEBUG_UART_TX_PERIPHERAL UART0                 /*!<@brief Device name: UART0 */
-#define BOARD_DEBUG_UART_TX_SIGNAL TX                        /*!<@brief UART0 signal: TX */
-#define BOARD_DEBUG_UART_TX_PORT PORTA                       /*!<@brief PORT device name: PORTA */
-#define BOARD_DEBUG_UART_TX_PIN 2U                           /*!<@brief PORTA pin index: 2 */
-#define BOARD_DEBUG_UART_TX_PIN_NAME UART0_TX                /*!<@brief Pin name */
-#define BOARD_DEBUG_UART_TX_LABEL "J1[4]/D1/UART1_TX_TGTMCU" /*!<@brief Label */
-#define BOARD_DEBUG_UART_TX_NAME "DEBUG_UART_TX"             /*!<@brief Identifier name */
-                                                             /* @} */
-
-/*! @name PORTE29 (number 26), LED_RED
-  @{ */
-#define BOARD_LED_RED_PERIPHERAL TPM0   /*!<@brief Device name: TPM0 */
-#define BOARD_LED_RED_SIGNAL CH         /*!<@brief TPM0 signal: CH */
-#define BOARD_LED_RED_PORT PORTE        /*!<@brief PORT device name: PORTE */
-#define BOARD_LED_RED_PIN 29U           /*!<@brief PORTE pin index: 29 */
-#define BOARD_LED_RED_CHANNEL 2         /*!<@brief TPM0 channel: 2 */
-#define BOARD_LED_RED_PIN_NAME TPM0_CH2 /*!<@brief Pin name */
-#define BOARD_LED_RED_LABEL "LED_RED"   /*!<@brief Label */
-#define BOARD_LED_RED_NAME "LED_RED"    /*!<@brief Identifier name */
-                                        /* @} */
-
-/*! @name PORTD5 (number 98), J2[12]/D13/LED_GREEN
-  @{ */
-#define BOARD_LED_GREEN_PERIPHERAL TPM0              /*!<@brief Device name: TPM0 */
-#define BOARD_LED_GREEN_SIGNAL CH                    /*!<@brief TPM0 signal: CH */
-#define BOARD_LED_GREEN_PORT PORTD                   /*!<@brief PORT device name: PORTD */
-#define BOARD_LED_GREEN_PIN 5U                       /*!<@brief PORTD pin index: 5 */
-#define BOARD_LED_GREEN_CHANNEL 5                    /*!<@brief TPM0 channel: 5 */
-#define BOARD_LED_GREEN_PIN_NAME TPM0_CH5            /*!<@brief Pin name */
-#define BOARD_LED_GREEN_LABEL "J2[12]/D13/LED_GREEN" /*!<@brief Label */
-#define BOARD_LED_GREEN_NAME "LED_GREEN"             /*!<@brief Identifier name */
-                                                     /* @} */
-
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
  */
 void BOARD_InitPins(void);
-
-/*!
- *
- */
-void BOARD_I2C_ConfigurePins(void);
 
 #if defined(__cplusplus)
 }

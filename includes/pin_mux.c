@@ -41,7 +41,6 @@ processor: MKL46Z256xxx4
 package_id: MKL46Z256VLL4
 mcu_data: ksdk2_0
 processor_version: 0.0.9
-board: FRDM-KL46Z
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -56,12 +55,11 @@ board: FRDM-KL46Z
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 BOARD_InitPins:
-- options: {callFromInitBoot: 'true', prefix: BOARD_, coreID: core0, enableClock: 'true'}
+- options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: '35', peripheral: UART0, signal: RX, pin_signal: TSI0_CH2/PTA1/UART0_RX/TPM2_CH0}
   - {pin_num: '36', peripheral: UART0, signal: TX, pin_signal: TSI0_CH3/PTA2/UART0_TX/TPM2_CH1}
-  - {pin_num: '26', peripheral: TPM0, signal: 'CH, 2', pin_signal: CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0}
-  - {pin_num: '98', peripheral: TPM0, signal: 'CH, 5', pin_signal: LCD_P45/ADC0_SE6b/PTD5/SPI1_SCK/UART2_TX/TPM0_CH5/LCD_P45_Fault}
+  - {pin_num: '18', peripheral: ADC0, signal: 'SE, 0', pin_signal: LCD_P59/ADC0_DP0/ADC0_SE0/PTE20/TPM1_CH0/UART0_TX/LCD_P59_Fault}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -76,22 +74,17 @@ void BOARD_InitPins(void)
 {
     /* Port A Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortA);
-    /* Port D Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortD);
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
 
     /* PORTA1 (pin 35) is configured as UART0_RX */
-    PORT_SetPinMux(BOARD_DEBUG_UART_RX_PORT, BOARD_DEBUG_UART_RX_PIN, kPORT_MuxAlt2);
+    PORT_SetPinMux(PORTA, 1U, kPORT_MuxAlt2);
 
     /* PORTA2 (pin 36) is configured as UART0_TX */
-    PORT_SetPinMux(BOARD_DEBUG_UART_TX_PORT, BOARD_DEBUG_UART_TX_PIN, kPORT_MuxAlt2);
+    PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
 
-    /* PORTD5 (pin 98) is configured as TPM0_CH5 */
-    PORT_SetPinMux(BOARD_LED_GREEN_PORT, BOARD_LED_GREEN_PIN, kPORT_MuxAlt4);
-
-    /* PORTE29 (pin 26) is configured as TPM0_CH2 */
-    PORT_SetPinMux(BOARD_LED_RED_PORT, BOARD_LED_RED_PIN, kPORT_MuxAlt3);
+    /* PORTE20 (pin 18) is configured as ADC0_SE0 */
+    PORT_SetPinMux(PORTE, 20U, kPORT_PinDisabledOrAnalog);
 
     SIM->SOPT5 = ((SIM->SOPT5 &
                    /* Mask bits to zero which are setting */
@@ -102,55 +95,6 @@ void BOARD_InitPins(void)
 
                   /* UART0 Receive Data Source Select: UART_RX pin. */
                   | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
-}
-
-/* clang-format off */
-/*
- * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-BOARD_I2C_ConfigurePins:
-- options: {coreID: core0, enableClock: 'true'}
-- pin_list:
-  - {pin_num: '31', peripheral: I2C0, signal: SCL, pin_signal: PTE24/TPM0_CH0/I2C0_SCL, slew_rate: fast, pull_select: up, pull_enable: enable}
-  - {pin_num: '32', peripheral: I2C0, signal: SDA, pin_signal: PTE25/TPM0_CH1/I2C0_SDA, slew_rate: fast, pull_select: up, pull_enable: enable}
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
- */
-/* clang-format on */
-
-/* FUNCTION ************************************************************************************************************
- *
- * Function Name : BOARD_I2C_ConfigurePins
- *
- * END ****************************************************************************************************************/
-void BOARD_I2C_ConfigurePins(void)
-{
-    /* Port E Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortE);
-
-    const port_pin_config_t porte24_pin31_config = {/* Internal pull-up resistor is enabled */
-                                                    kPORT_PullUp,
-                                                    /* Fast slew rate is configured */
-                                                    kPORT_FastSlewRate,
-                                                    /* Passive filter is disabled */
-                                                    kPORT_PassiveFilterDisable,
-                                                    /* Low drive strength is configured */
-                                                    kPORT_LowDriveStrength,
-                                                    /* Pin is configured as I2C0_SCL */
-                                                    kPORT_MuxAlt5};
-    /* PORTE24 (pin 31) is configured as I2C0_SCL */
-    PORT_SetPinConfig(PORTE, 24U, &porte24_pin31_config);
-
-    const port_pin_config_t porte25_pin32_config = {/* Internal pull-up resistor is enabled */
-                                                    kPORT_PullUp,
-                                                    /* Fast slew rate is configured */
-                                                    kPORT_FastSlewRate,
-                                                    /* Passive filter is disabled */
-                                                    kPORT_PassiveFilterDisable,
-                                                    /* Low drive strength is configured */
-                                                    kPORT_LowDriveStrength,
-                                                    /* Pin is configured as I2C0_SDA */
-                                                    kPORT_MuxAlt5};
-    /* PORTE25 (pin 32) is configured as I2C0_SDA */
-    PORT_SetPinConfig(PORTE, 25U, &porte25_pin32_config);
 }
 /***********************************************************************************************************************
  * EOF

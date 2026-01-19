@@ -163,6 +163,7 @@ void Default_ResetHandler(void)
     }
 
   /* call the application's entry point */
+  /*desactivar watchdog aqui*/
   main();
 }
 
