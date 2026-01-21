@@ -51,8 +51,7 @@ uint16_t adc0_leer_luz(void) {
 }
 
 void Port_Init(void){
-    SIM->SCGC6 |= SIM_SCGC6_ADC0_MASK | SIM_SCGC6_TPM0_MASK;
-    SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
+    SIM->SCGC6 |= SIM_SCGC6_ADC0_MASK;// | SIM_SCGC6_TPM0_MASK;
 }
 
 int main(void) {
