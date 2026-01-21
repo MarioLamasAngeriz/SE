@@ -3,7 +3,7 @@ CFLAGS=-I ./includes -I ./drivers -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MK
 LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
 
 TARGET=main.elf
-OBJECTS=main.o startup.o 
+OBJECTS=main.o startup.o ./drivers/fsl_tpm.o ./drivers/fsl_assert.o ./drivers/fsl_clock.o ./drivers/fsl_debug_console.o ./drivers/fsl_log.o ./drivers/fsl_io.o ./drivers/fsl_lpsci.o ./drivers/fsl_lpsci.o ./drivers/fsl_uart.o ./drivers/fsl_str.o ./includes/pin_mux.o ./includes/clock_config.o ./drivers/fsl_smc.o ./drivers/fsl_ftfx_cache.o ./drivers/fsl_ftfx_controller.o ./drivers/fsl_ftfx_flash.o ./includes/system_MKL46Z4.o ./includes/board.o
 
 all: $(TARGET)
 

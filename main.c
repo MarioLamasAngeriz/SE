@@ -6,6 +6,9 @@
 #include "includes/MKL46Z4.h"
 #include "drivers/fsl_tpm.h"
 #include "drivers/fsl_debug_console.h"
+#include "board.h"
+#include "fsl_clock.h"
+#include "pin_mux.h"
 #include <stdint.h>
 
 void setup_pwm(void) {
@@ -47,15 +50,35 @@ uint16_t adc0_leer_luz(void) {
 	return (uint16_t)ADC0->R[0];
 }
 
+void Port_Init(void){
+    SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK | SIM_SCGC5_PORTE_MASK;
+    SIM->SCGC6 |= SIM_SCGC6_ADC0_MASK | SIM_SCGC6_TPM0_MASK;
+    SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
+}
+
 int main(void) {
 
+    	BOARD_InitPins();
+	BOARD_BootClockRUN();
+	BOARD_InitDebugConsole();
+	CLOCK_SetTpmClock(1U);
+
+	Port_Init();
 	adc0_init();
 	setup_pwm();
 
-	adc0_leer_luz();
+	while(1) {
+		uint16_t lectura = adc0_leer_luz();
+		PRINTF("Lectura ADC: %d \r\n", lectura);
 
-	PRINTF("TAL = %d \r\n", adc0_leer_luz());
+		float verde, rojo;
 
-	change_leds(0, 0);
+		verde = (lectura / 4095.0f) * 100.0f;
+		rojo = 100.0f - verde;
 
+		change_leds(rojo, verde);
+		for (volatile int i = 0; i < 500000; i++); 
+	}
 }
+
+
