@@ -3,7 +3,7 @@ CFLAGS=-I ./includes -I ./drivers -O2 -Wall -mthumb -mcpu=cortex-m0plus -DCPU_MK
 LDFLAGS=-O2 -Wall -mthumb -mcpu=cortex-m0plus --specs=nano.specs -Wl,--gc-sections,-Map,main.map,-Tlink.ld
 
 TARGET=main.elf
-OBJECTS=main.o startup.o drivers/fsl_assert.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_common.o drivers/fsl_clock.o drivers/fsl_adc16.o drivers/fsl_dmamux.o drivers/fsl_dma.o drivers/fsl_gpio.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o includes/board.o includes/pin_mux.o includes/clock_config.o drivers/fsl_smc.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o
+OBJECTS=main.o startup.o drivers/fsl_assert.o includes/system_MKL46Z4.o drivers/fsl_debug_console.o drivers/fsl_common.o drivers/fsl_clock.o drivers/fsl_gpio.o drivers/fsl_log.o drivers/fsl_str.o drivers/fsl_io.o drivers/fsl_uart.o drivers/fsl_lpsci.o includes/board.o includes/pin_mux.o includes/clock_config.o drivers/fsl_smc.o drivers/fsl_ftfx_cache.o drivers/fsl_ftfx_controller.o drivers/fsl_ftfx_flash.o
 
 all: $(TARGET)
 

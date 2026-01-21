@@ -59,7 +59,8 @@ BOARD_InitPins:
 - pin_list:
   - {pin_num: '35', peripheral: UART0, signal: RX, pin_signal: TSI0_CH2/PTA1/UART0_RX/TPM2_CH0}
   - {pin_num: '36', peripheral: UART0, signal: TX, pin_signal: TSI0_CH3/PTA2/UART0_TX/TPM2_CH1}
-  - {pin_num: '18', peripheral: ADC0, signal: 'SE, 0', pin_signal: LCD_P59/ADC0_DP0/ADC0_SE0/PTE20/TPM1_CH0/UART0_TX/LCD_P59_Fault}
+  - {pin_num: '98', peripheral: TPM0, signal: 'CH, 5', pin_signal: LCD_P45/ADC0_SE6b/PTD5/SPI1_SCK/UART2_TX/TPM0_CH5/LCD_P45_Fault}
+  - {pin_num: '26', peripheral: TPM0, signal: 'CH, 2', pin_signal: CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -74,6 +75,8 @@ void BOARD_InitPins(void)
 {
     /* Port A Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortA);
+    /* Port D Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortD);
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
 
@@ -83,8 +86,11 @@ void BOARD_InitPins(void)
     /* PORTA2 (pin 36) is configured as UART0_TX */
     PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
 
-    /* PORTE20 (pin 18) is configured as ADC0_SE0 */
-    PORT_SetPinMux(PORTE, 20U, kPORT_PinDisabledOrAnalog);
+    /* PORTD5 (pin 98) is configured as TPM0_CH5 */
+    PORT_SetPinMux(PORTD, 5U, kPORT_MuxAlt4);
+
+    /* PORTE29 (pin 26) is configured as TPM0_CH2 */
+    PORT_SetPinMux(PORTE, 29U, kPORT_MuxAlt3);
 
     SIM->SOPT5 = ((SIM->SOPT5 &
                    /* Mask bits to zero which are setting */
