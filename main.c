@@ -51,12 +51,14 @@ uint16_t adc0_leer_luz(void) {
 }
 
 void Port_Init(void){
-    SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK | SIM_SCGC5_PORTE_MASK;
     SIM->SCGC6 |= SIM_SCGC6_ADC0_MASK | SIM_SCGC6_TPM0_MASK;
     SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
 }
 
 int main(void) {
+
+	float verde, rojo;
+	uint16_t lectura;
 
     	BOARD_InitPins();
 	BOARD_BootClockRUN();
@@ -68,15 +70,12 @@ int main(void) {
 	setup_pwm();
 
 	while(1) {
-		uint16_t lectura = adc0_leer_luz();
-		PRINTF("Lectura ADC: %d \r\n", lectura);
-
-		float verde, rojo;
-
+		lectura = adc0_leer_luz();
 		verde = (lectura / 4095.0f) * 100.0f;
 		rojo = 100.0f - verde;
-
 		change_leds(rojo, verde);
+		PRINTF("Lectura ADC = %d, Rojo = %d, Verde = %d\r\n", lectura, (int)rojo, (int)verde);
+
 		for (volatile int i = 0; i < 500000; i++); 
 	}
 }
