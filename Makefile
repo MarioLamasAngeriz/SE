@@ -28,6 +28,6 @@ clean:
 	$(RM) *.o drivers/*.o includes/*.o
 
 cleanall:
-	$(RM) *.o *.elf *.map drivers/*.o includes/*.o
+	$(RM) *.o *.elf *.map drivers/*.o includes/*.o includes/bubble_per/*.o includes/bubble/*.o
 
 
